@@ -105,6 +105,12 @@ class OCRestClient
         }
     }
 
+    public static function getAllConfigs(){
+        $stmt = DBManager::get()->prepare("SELECT * FROM `oc_config`");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      *  function setConfig - sets config into DB for given REST-Service-Client
      *

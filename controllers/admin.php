@@ -111,7 +111,29 @@ class AdminController extends OpencastController
         // invalidate series-cache when editing configuration
         StudipCacheFactory::getCache()->expire('oc_allseries');
 
-        foreach (Request::getArray('config') as $config_id => $config) {
+        $new_configs = $this->clean_configs_for_update(
+            Request::getArray('config'),
+            OCRestClient::getAllConfigs()
+        );
+
+
+        foreach ($new_configs as $key=>$config){
+            if($key == 'possible_removed'){
+                continue;
+            }
+
+        }
+
+        die(var_dump($new_configs));
+
+        #remove
+        foreach($new_configs['possible_removed'] as $to_remove){
+            $stmt = DBManager::get()->prepare("UPDATE oc_seminar_series SET config_id = ? WHERE config_id = ?;");
+            $stmt->execute([0,$to_remove]);
+            OCRestClient::clearConfig($to_remove);
+        }
+
+        foreach ($configs_to_update as $config_id => $config) {
             // if no data is given (i.e.: The selected config shall be deleted!),
             // remove config data properly
             if (!$config['url']) {
@@ -377,5 +399,52 @@ class AdminController extends OpencastController
         }
 
         $this->memory_space = OCJobManager::save_dir_size();
+    }
+
+    private function clean_configs_for_update($requested_configs,$current_configs)
+    {
+        $clean_configs = [];
+        $current_offset = 0;
+        $possible_removed = [];
+        #first step: trim requested id's
+        foreach($requested_configs as $config_id=>$values){
+            if($values['url']=='' && $values['user']=='' && $values['password']==''){
+                $possible_removed[] = $config_id;
+                $current_offset++;
+            }else{
+                $new_index = $config_id-$current_offset;
+                $values['request_id_trim'] = [
+                    'requested_id' => $config_id,
+                    'given_id' => $new_index,
+                    'has_changed' => ($config_id!=$new_index)
+                ];
+                $clean_configs[$new_index] = $values;
+            }
+        }
+        #second step: look for additions and updates ans removes
+        $current_configs = $this->prepare_current_configs($current_configs);
+        foreach($clean_configs as $index=>$config){
+            if(isset($current_configs[$config['request_id_trim']['requested_id']]) ){
+                $clean_configs[$index]['operation'] = 'update';
+            }else{
+                $clean_configs[$index]['operation'] = 'add';
+            }
+        }
+        $clean_configs['possible_removed'] = $possible_removed;
+
+        return $clean_configs;
+    }
+
+    private function prepare_current_configs($current_configs)
+    {
+        $prepared = [];
+        foreach($current_configs as $values){
+            $prepared[$values['config_id']] = [
+                'url' => $values['service_url'],
+                'user' => $values['service_user'],
+                'password' => $values['service_password']
+            ];
+        }
+        return $prepared;
     }
 }
