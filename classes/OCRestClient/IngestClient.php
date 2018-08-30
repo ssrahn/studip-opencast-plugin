@@ -84,14 +84,14 @@ class IngestClient extends OCRestClient
      */
     public function addTrack($mediaPackage, $trackURI, $flavor)
     {
-        $data = array(
+        $data = [
             'url' => $trackURI,
             'flavor' => $flavor,
             'mediaPackage' => $mediaPackage,
             'tags' => ''
-        );
+        ];
 
-        if($res = $this->getXML('/addTrack', http_build_query($data), false, false, true)) {
+        if($res = $this->getXML('/addTrack', $data, false, false)) {
             return $res;
         } else {
             return false;

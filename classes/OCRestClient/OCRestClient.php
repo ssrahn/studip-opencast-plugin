@@ -3,7 +3,7 @@
  * OCRestClient.php - The administarion of the opencast player
  */
 
-define(DEBUG_CURL, false);
+define(DEBUG_CURL, true);
 
 class OCRestClient
 {
@@ -58,7 +58,7 @@ class OCRestClient
         // debugging
         if (DEBUG_CURL) {
             $this->curl->register_option(CURLOPT_VERBOSE, true);
-            $this->debug = fopen('php://output', 'w');
+            $this->debug = fopen('php://output', 'a');
             $this->curl->register_option(CURLOPT_STDERR, $this->debug);
         }
     }
@@ -160,10 +160,11 @@ class OCRestClient
 
             $this->curl->register_options($options);
             $response = $this->curl->execute();
+            fwrite($this->debug,print_r($this->curl,true));
             $httpCode = $this->curl->get_http_response_code();
 
             if (DEBUG_CURL) {
-                fclose($this->debug);
+                #fclose($this->debug);
             }
 
             if ($with_res_code) {
@@ -177,6 +178,9 @@ class OCRestClient
                 // throw exception if the endpoint is missing
                 if ($httpCode == 404) {
                     if (DEBUG_CURL) {
+                        fwrite($this->debug,'[Opencast-Plugin] Error calling "'
+                            . $this->base_url . $service_url
+                            . '" ' . strip_tags($response));
                         error_log('[Opencast-Plugin] Error calling "'
                             . $this->base_url . $service_url
                             . '" ' . strip_tags($response)

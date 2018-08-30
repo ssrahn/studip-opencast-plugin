@@ -18,9 +18,6 @@ class cURL
 
     private function init()
     {
-        if ($this->has_handler()) {
-            curl_close($this->handler);
-        }
         $this->handler = curl_init();
     }
 
@@ -59,6 +56,10 @@ class cURL
 
     public function get_http_response_code(){
         return $this->get_info(CURLINFO_HTTP_CODE);
+    }
+
+    public function get_error(){
+        return curl_errno($this->handler).' -> '.curl_error($this->handler);
     }
 
 }

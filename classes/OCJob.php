@@ -263,6 +263,7 @@ class OCJob
             $track_uri,
             $this->opencast_info['flavor']
         );
+
         $result = 'SUCCESS';
         if ($media_package === false) {
             $result = 'ERROR';

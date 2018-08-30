@@ -1,3 +1,17 @@
+<pre>
+    <?
+    $job = new OCJob('71bc715abca4aa721105a9aa8bb340f8');
+    $upload_client = new UploadClient();
+    $ingest_client = new IngestClient();
+    $track_uri = $upload_client->getTrackURI($job->complete_data()['opencast_info']['opencast_job_id']);
+    $media_package = $ingest_client->addTrack(
+        $job->complete_data()['opencast_info']['media_package'],
+        $track_uri,
+        $job->complete_data()['opencast_info']['flavor']
+    );
+    ?>
+</pre>
+
 <div id="opencast">
     <h2>
         <?= $_('Festplattenplatz im Tempverzeichnis') ?>
