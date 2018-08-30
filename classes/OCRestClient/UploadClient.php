@@ -53,14 +53,16 @@ class UploadClient extends OCRestClient {
         $uri = $rest_end_point;
 
         // setting up a curl-handler
-        curl_setopt($this->ochandler,CURLOPT_URL,$this->base_url.$uri);
-        curl_setopt($this->ochandler, CURLOPT_POST, true);
-        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data'));
-        curl_setopt($this->ochandler, CURLOPT_ENCODING, "UTF-8");
+        $this->curl->register_options([
+            CURLOPT_URL => $this->base_url.$uri,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => ['Content-Type: multipart/form-data'],
+            CURLOPT_ENCODING => 'UTF-8'
+        ]);
 
-        $response = curl_exec($this->ochandler);
-        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+        $response = $this->curl->execute();
+        $httpCode = $this->curl->get_http_response_code();
         $res = array();
         $res[] = $httpCode;
         $res[] = $response;

@@ -177,11 +177,12 @@ class SeriesClient extends OCRestClient
     function removeSeries($series_id) {
 
         $service_url = "/".$series_id;
-        curl_setopt($this->ochandler,CURLOPT_URL,$this->base_url.$service_url);
-        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "DELETE");
-        //TODO �ber REST Classe laufen lassen, getXML, getJSON...
-        $response = curl_exec($this->ochandler);
-        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+        $this->curl->register_options([
+            CURLOPT_URL => $this->base_url.$service_url,
+            CURLOPT_CUSTOMREQUEST => 'DELETE'
+        ]);
+        $response = $this->curl->execute();
+        $httpCode = $this->curl->get_http_response_code();
         if($httpCode == 204){
             return true;
         } else return false;

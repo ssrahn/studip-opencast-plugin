@@ -12,6 +12,7 @@ class OCRestClient
     protected $username;
     protected $password;
     public $serviceName = 'ParentRestClientClass';
+    public $curl;
 
     static function getInstance($course_id = null)
     {
@@ -40,19 +41,19 @@ class OCRestClient
         $this->oc_version = $config['service_version'];
 
         // setting up a curl-handler in a wrapper
-        $this->curl = new cURL();
-        //auth
-        $this->curl->register_option(CURLOPT_RETURNTRANSFER, 1);
-        $this->curl->register_option(CURLOPT_HTTPAUTH, CURLAUTH_DIGEST);
-        $this->curl->register_option(CURLOPT_USERPWD, $this->username . ':' . $this->password);
-        $this->curl->register_option(CURLOPT_ENCODING, 'UTF-8');
-        $this->curl->register_option(CURLOPT_HTTPHEADER, ['X-Requested-Auth: Digest']);
-        $this->curl->register_option(CURLOPT_FOLLOWLOCATION, 1);
-        //ssl
-        $this->curl->register_option(CURLOPT_SSL_VERIFYPEER, false);
-        $this->curl->register_option(CURLOPT_SSL_VERIFYHOST, false);
-        #$this->curl->set_option(CURLOPT_SSL_CIPHER_LIST, 'RC4-SHA');
-
+        $this->curl = new cURL([
+            //auth
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_HTTPAUTH => CURLAUTH_DIGEST,
+            CURLOPT_USERPWD => $this->username . ':' . $this->password,
+            CURLOPT_ENCODING => 'UTF-8',
+            CURLOPT_HTTPHEADER => ['X-Requested-Auth: Digest'],
+            CURLOPT_FOLLOWLOCATION => 1,
+            //ssl
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
+            #CURLOPT_SSL_CIPHER_LIST => 'RC4-SHA'
+        ]);
 
         // debugging
         if (DEBUG_CURL) {
@@ -157,7 +158,7 @@ class OCRestClient
                 $options[CURLOPT_HTTPGET] = 1;
             }
 
-            $this->curl->set_options($options);
+            $this->curl->register_options($options);
             $response = $this->curl->execute();
             $httpCode = $this->curl->get_http_response_code();
 

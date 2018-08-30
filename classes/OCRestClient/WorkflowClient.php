@@ -74,9 +74,9 @@ class WorkflowClient extends OCRestClient
             CURLOPT_CUSTOMREQUEST => 'DELETE'
         );
 
-        curl_setopt_array($this->ochandler, $options);
-        $response = curl_exec($this->ochandler);
-        $http = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
+        $this->curl->register_options($options);
+        $response = $this->curl->execute();
+        $http = $this->curl->get_http_response_code();
 
         if (in_array($http,array(204,404))) {
             return true;

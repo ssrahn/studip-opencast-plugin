@@ -2,12 +2,18 @@
 
 class cURL
 {
+    const OPTION_PERMANENT = 1;
+    const OPTION_DYNAMIC = 2;
+
     private $handler;
     private $options;
 
-    public function __construct()
+    public function __construct($options=[])
     {
         $this->init();
+        if(is_array($options)){
+            $this->register_options($options);
+        }
     }
 
     private function init()
@@ -28,7 +34,7 @@ class cURL
         $this->options[$option] = $value;
     }
 
-    public function set_options($options)
+    public function register_options($options)
     {
         foreach ($options as $option_type => $option_value) {
             $this->register_option($option_type, $option_value);
