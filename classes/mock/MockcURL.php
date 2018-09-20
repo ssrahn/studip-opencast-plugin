@@ -73,7 +73,7 @@ class MockcURL extends OCcURL
             }
         }
 
-        return $this->last_response->boolean_result;
+        return $this->last_response->boolean_result();
     }
 
     protected function has_option($option_key)
@@ -85,14 +85,14 @@ class MockcURL extends OCcURL
     {
         return [
             'number'  => $this->last_response->error_number,
-            'message' => $this->last_response->error_message
+            'message' => ($this->last_response->error_message == '' ? curl_strerror($this->last_response->error_number) : $this->last_response->error_message)
         ];
     }
 
     protected function get_response_for_request($request)
     {
         foreach ($this->request_responses as $response) {
-            if ($response->for_url($request[CURLOPT_URL])) {
+            if ($response->url == $request[CURLOPT_URL]) {
                 return $response;
             }
         }

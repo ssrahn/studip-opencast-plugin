@@ -79,10 +79,6 @@ class cURL
         $response = $this->execute_internal();
         $this->log_error($this->last_error());
 
-        if ($this->has_errors()) {
-            var_dump($this->get_error_list());
-        }
-
         return $response;
     }
 
@@ -99,6 +95,7 @@ class cURL
     protected function log_error($error)
     {
         if ($error['number'] > 0 || $error['message'] != '') {
+            $error['number_interpreted'] = curl_strerror($error['number']);
             $this->errors[microtime()] = $error;
         }
     }

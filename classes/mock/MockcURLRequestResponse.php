@@ -30,10 +30,19 @@ class MockcURLRequestResponse
     {
         $info = [];
         $info[CURLINFO_HTTP_CODE] = $this->http_code;
-        foreach ($this->info as $k=>$v){
+        foreach ($this->info as $k => $v) {
             $info[$k] = $v;
         }
+
         return $info;
+    }
+
+    public function boolean_result()
+    {
+        if($this->error_number > 0 || $this->error_message != ''){
+            return false;
+        }
+        return $this->boolean_result;
     }
 
 }

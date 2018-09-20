@@ -26,4 +26,12 @@ class OCcURL extends cURL
             CURLOPT_STDERR  => $this->debug_stream
         ]);
     }
+
+    public function set_url($url){
+        $this->set_option(CURLOPT_URL, $url);
+    }
+
+    public function set_custom_method($method){
+        $this->set_option(CURLOPT_CUSTOMREQUEST, $method);
+    }
 }
