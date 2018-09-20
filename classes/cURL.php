@@ -54,7 +54,7 @@ class cURL
         if (!$result) {
             $this->log_error([
                 'number'  => 1000,
-                'message' => 'Option "' . $option_value . ':' . $option_key . '" konnte nicht gesetzt werden!'
+                'message' => 'Option "' . $option_key . ':' . $option_value . '" konnte nicht gesetzt werden!'
             ]);
         }
 
