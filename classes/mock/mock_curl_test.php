@@ -20,6 +20,8 @@ $responses[] = new MockcURLRequestResponse(
     3,
     'custom error message test (real error in "number_interpreted"!'
 );
+
+
 /**
  * RESTRICT OPTION(S)
  */
@@ -29,9 +31,10 @@ $restricted_fields = [CURLOPT_RETURNTRANSFER];
 /**
  * GENERATE AS USUAL
  */
-$curl = new MockcURL($restricted_fields,$responses);
+$curl = new MockcURL($restricted_fields, $responses);
 $curl->set_url('foo.de/bar.php');
 $curl->set_option(CURLOPT_RETURNTRANSFER, true);
+
 
 /**
  * TEST SOME RESULTS
