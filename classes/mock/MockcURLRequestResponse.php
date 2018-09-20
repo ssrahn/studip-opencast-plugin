@@ -8,42 +8,32 @@
 class MockcURLRequestResponse
 {
     public $url;
+    public $http_code;
+    public $error_number;
+    public $error_message;
+    public $body;
+    public $boolean_result;
+    public $info;
 
-    public function __construct($for_url)
+    public function __construct($for_url, $http_code = 200, $body = '', $error_number = 0, $error_message = '', $boolean_result = true, $info = [])
     {
         $this->url = $for_url;
-    }
-
-    public function http_code()
-    {
-        return 200;
-    }
-
-    public function error_number()
-    {
-        return 0;
-    }
-
-    public function error_message()
-    {
-        return '';
-    }
-
-    public function body()
-    {
-        return '';
-    }
-
-    public function boolean_result()
-    {
-        return true;
+        $this->http_code = $http_code;
+        $this->body = $body;
+        $this->error_message = $error_message;
+        $this->error_number = $error_number;
+        $this->boolean_result = $boolean_result;
+        $this->info = $info;
     }
 
     public function info()
     {
-        return [
-            CURLINFO_HTTP_CODE => $this->http_code()
-        ];
+        $info = [];
+        $info[CURLINFO_HTTP_CODE] = $this->http_code;
+        foreach ($this->info as $k=>$v){
+            $info[$k] = $v;
+        }
+        return $info;
     }
 
 }

@@ -67,12 +67,13 @@ class MockcURL extends OCcURL
     protected function execute_internal()
     {
         $this->last_response = $this->get_response_for_request($this->options);
-        if($this->has_option(CURLOPT_RETURNTRANSFER)){
-            if($this->options[CURLOPT_RETURNTRANSFER]){
-                return $this->last_response->body();
+        if ($this->has_option(CURLOPT_RETURNTRANSFER)) {
+            if ($this->options[CURLOPT_RETURNTRANSFER]) {
+                return $this->last_response->body;
             }
         }
-        return $this->last_response->boolean_result();
+
+        return $this->last_response->boolean_result;
     }
 
     protected function has_option($option_key)
@@ -83,8 +84,8 @@ class MockcURL extends OCcURL
     protected function last_error()
     {
         return [
-            'number'  => $this->last_response->error_number(),
-            'message' => $this->last_response->error_message()
+            'number'  => $this->last_response->error_number,
+            'message' => $this->last_response->error_message
         ];
     }
 
@@ -96,7 +97,14 @@ class MockcURL extends OCcURL
             }
         }
 
-        return new MockcURLRequestResponse($request[CURLOPT_URL]);
+        return new MockcURLRequestResponse(
+            $request[CURLOPT_URL],
+            404,
+            '',
+            9999,
+            'Keine MockResponse zur URL "' . $request[CURLOPT_URL] . '" gefunden!',
+            false
+        );
     }
 
     protected function get_info_internal()
