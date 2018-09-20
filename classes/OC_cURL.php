@@ -16,4 +16,13 @@ class OC_cURL extends cURL
     {
         return $this->get_specific_info(CURLINFO_HTTP_CODE);
     }
+
+    public function init_debug_mode()
+    {
+        $this->debug = fopen('php://output', 'w');
+        $this->set_options([
+            CURLOPT_VERBOSE => true,
+            CURLOPT_STDERR  => $this->debug
+        ]);
+    }
 }

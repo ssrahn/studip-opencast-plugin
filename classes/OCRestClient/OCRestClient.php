@@ -55,11 +55,7 @@ class OCRestClient
 
         // debugging
         if (DEBUG_CURL) {
-            $this->debug = fopen('php://output', 'w');
-            $this->ochandler->set_options([
-                CURLOPT_VERBOSE => true,
-                CURLOPT_STDERR  => $this->debug
-            ]);
+            $this->ochandler->init_debug_mode();
         }
     }
 
