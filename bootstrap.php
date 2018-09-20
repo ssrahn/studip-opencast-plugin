@@ -17,6 +17,8 @@ require_once 'classes/OCJob.php';
 require_once 'classes/OCJobLocation.php';
 require_once 'classes/OCJsonFile.php';
 
+require_once 'classes/cURL.php';
+require_once 'classes/OC_cURL.php';
 require_once 'classes/OCRestClient/OCRestClient.php';
 
 require_once 'classes/OCRestClient/ArchiveClient.php';

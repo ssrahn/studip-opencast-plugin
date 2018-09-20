@@ -35,7 +35,7 @@ class SchedulerClient extends OCRestClient
         $event_id      = null;
 
         if ($this->oc_version == 3) {
-            curl_setopt($this->ochandler, CURLOPT_HEADER, true);
+            $this->ochandler->set_option(CURLOPT_HEADER, true);
 
             $result = $this->getJSON('/', $metadata, false, true);
 
@@ -83,11 +83,13 @@ class SchedulerClient extends OCRestClient
         $event_data = OCModel::checkScheduled($course_id, $resource_id, $date_id);
         $event_id = $event_data[0]['event_id'];
 
-        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, 'DELETE');
-        curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array(
-            'X-Requested-Auth: Digest',
-            'Content-Length: 0'             // in some environments curl incorrectly adds -1
-        ));
+        $this->ochandler->set_options([
+            CURLOPT_CUSTOMREQUEST => 'DELETE',
+            CURLOPT_HTTPHEADER => [
+                'X-Requested-Auth: Digest',
+                'Content-Length: 0'
+            ]
+        ]);
 
         $result = $this->getJSON('/'. $event_id, [], false, true);
 
@@ -125,7 +127,7 @@ class SchedulerClient extends OCRestClient
             'agent'           => $metadata['agent']
         );
 
-        curl_setopt($this->ochandler, CURLOPT_CUSTOMREQUEST, "PUT");
+        $this->ochandler->set_option(CURLOPT_CUSTOMREQUEST, 'PUT');
 
         $result = $this->getJSON("/$event_id", $post, false, true);
 

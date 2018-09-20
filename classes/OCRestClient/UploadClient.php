@@ -1,6 +1,7 @@
 <?php
 
-class UploadClient extends OCRestClient {
+class UploadClient extends OCRestClient
+{
     static $me;
     public $serviceName = 'Upload';
 
@@ -18,23 +19,25 @@ class UploadClient extends OCRestClient {
      *
      * @return boolean
      */
-    function newJob($name, $size, $chunksize, $flavor, $mediaPackage) {
-        $data = array(
-            'filename' => urlencode($name),
-            'filesize' => $size,
-            'chunksize' =>  $chunksize,
-            'flavor' => urlencode($flavor),
+    function newJob($name, $size, $chunksize, $flavor, $mediaPackage)
+    {
+        $data = [
+            'filename'     => urlencode($name),
+            'filesize'     => $size,
+            'chunksize'    => $chunksize,
+            'flavor'       => urlencode($flavor),
             'mediapackage' => urlencode($mediaPackage)
-        );
+        ];
 
         $rest_end_point = "/newjob";
 
-        if($response = $this->getXML($rest_end_point, $data, false)) {
+        if ($response = $this->getXML($rest_end_point, $data, false)) {
             return $response;
         } else {
             return false;
         }
     }
+
     /**
      * upload one chunk
      */
@@ -44,47 +47,53 @@ class UploadClient extends OCRestClient {
         $file->setMimeType($filedata['mime']);
         $file->setPostFilename($filedata['postname']);
 
-        $data = array(
+        $data = [
             'chunknumber' => $chunknumber,
-            'filedata' => $file
-        );
+            'filedata'    => $file
+        ];
 
-        $rest_end_point = "/job/".$job_id;
+        $rest_end_point = "/job/" . $job_id;
         $uri = $rest_end_point;
 
         // setting up a curl-handler
-        curl_setopt($this->ochandler,CURLOPT_URL,$this->base_url.$uri);
-        curl_setopt($this->ochandler, CURLOPT_POST, true);
-        curl_setopt($this->ochandler, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($this->ochandler, CURLOPT_HTTPHEADER, array('Content-Type: multipart/form-data'));
-        curl_setopt($this->ochandler, CURLOPT_ENCODING, "UTF-8");
+        $this->ochandler->set_options([
+            CURLOPT_URL        => $this->base_url . $uri,
+            CURLOPT_POST       => true,
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => ['Content-Type: multipart/form-data'],
+            CURLOPT_ENCODING   => 'UTF-8'
+        ]);
 
-        $response = curl_exec($this->ochandler);
-        $httpCode = curl_getinfo($this->ochandler, CURLINFO_HTTP_CODE);
-        $res = array();
+        $response = $this->ochandler->execute();
+        $httpCode = $this->ochandler->last_request_http_code();
+        $res = [];
         $res[] = $httpCode;
         $res[] = $response;
-        if ($httpCode == 200 && isset($response)){
+        if ($httpCode == 200 && isset($response)) {
             return $res;
         } else {
             return false;
         }
     }
+
     /**
      * get State object
      */
     function getState($jobID)
     {
-        return $this->getJSON('/job/'.$jobID.'.json');
+        return $this->getJSON('/job/' . $jobID . '.json');
     }
+
     /**
      * check if state is $state
      */
-    function checkState($state, $jobID) {
-        if($response = $this->getState($jobID)) {
+    function checkState($state, $jobID)
+    {
+        if ($response = $this->getState($jobID)) {
             return ($state == $response->uploadjob->state);
         } else return false;
     }
+
     /**
      * check if fileupload is in progress
      */
@@ -92,6 +101,7 @@ class UploadClient extends OCRestClient {
     {
         return $this->checkState('INPROGRESS', $jobID);
     }
+
     /**
      * check if file upload is complete
      */
@@ -99,6 +109,7 @@ class UploadClient extends OCRestClient {
     {
         return $this->checkState('COMPLETE', $jobID);
     }
+
     /**
      * check if the chunk is the last
      */
@@ -109,15 +120,19 @@ class UploadClient extends OCRestClient {
         $ch2 = 'current-chunk';
         $numChunks = $state->uploadjob->$ch;
         $curChunk = $state->uploadjob->$ch2->number + 1;
-        return ($numChunks == $curChunk);
-     }
-     public function getTrackURI($jobID)
-     {
-         $state = $this->getState($jobID);
-         return $state->uploadjob->payload->mediapackage->media->track->url;
-     }
 
-    function addTrack($mediapackage, $flavor) {
+        return ($numChunks == $curChunk);
+    }
+
+    public function getTrackURI($jobID)
+    {
+        $state = $this->getState($jobID);
+
+        return $state->uploadjob->payload->mediapackage->media->track->url;
+    }
+
+    function addTrack($mediapackage, $flavor)
+    {
         return true;
     }
 }
