@@ -7,9 +7,9 @@
 
 class cURL
 {
-    private $handle;
-    private $errors;
-    private $debug;
+    protected $handle;
+    protected $errors;
+    protected $debug;
 
     public function __construct()
     {
@@ -23,7 +23,7 @@ class cURL
         $this->debug = $mode;
     }
 
-    private function init()
+    protected function init()
     {
         if (!$this->has_handle()) {
             $this->handle = curl_init();
@@ -50,7 +50,7 @@ class cURL
 
     public function set_option($option_key, $option_value)
     {
-        $result = curl_setopt($this->handle, $option_key, $option_value);
+        $result = $this->set_option_internal($option_key, $option_value);
         if (!$result) {
             $this->log_error([
                 'number'  => 1000,
@@ -63,7 +63,7 @@ class cURL
 
     public function set_options($options)
     {
-        $result = curl_setopt_array($this->handle, $options);
+        $result = $this->set_options_internal($options);
         if (!$result) {
             $this->log_error([
                 'number'  => 1001,
@@ -76,10 +76,10 @@ class cURL
 
     public function execute()
     {
-        $response = curl_exec($this->handle);
+        $response = $this->execute_internal();
         $this->log_error($this->last_error());
 
-        if($this->has_errors()){
+        if ($this->has_errors()) {
             var_dump($this->get_error_list());
         }
 
@@ -88,7 +88,7 @@ class cURL
 
     public function get_info()
     {
-        return curl_getinfo($this->handle);
+        return $this->get_info_internal();
     }
 
     public function get_specific_info($key)
@@ -96,14 +96,14 @@ class cURL
         return $this->get_info()[$key];
     }
 
-    private function log_error($error)
+    protected function log_error($error)
     {
         if ($error['number'] > 0 || $error['message'] != '') {
             $this->errors[microtime()] = $error;
         }
     }
 
-    private function last_error()
+    protected function last_error()
     {
         return [
             'number'  => curl_errno($this->handle),
@@ -119,5 +119,25 @@ class cURL
     public function has_errors()
     {
         return count($this->get_error_list()) > 0;
+    }
+
+    protected function set_option_internal($option_key, $option_value)
+    {
+        return curl_setopt($this->handle, $option_key, $option_value);
+    }
+
+    protected function set_options_internal($options)
+    {
+        return curl_setopt_array($this->handle, $options);
+    }
+
+    protected function execute_internal()
+    {
+        return curl_exec($this->handle);
+    }
+
+    protected function get_info_internal()
+    {
+        return curl_getinfo($this->handle);
     }
 }

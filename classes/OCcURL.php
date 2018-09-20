@@ -5,7 +5,7 @@
  * @version         1.0 (11:46)
  */
 
-class OC_cURL extends cURL
+class OCcURL extends cURL
 {
     public function __construct()
     {

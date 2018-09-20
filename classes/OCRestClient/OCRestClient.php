@@ -40,7 +40,7 @@ class OCRestClient
         $this->oc_version = $config['service_version'];
 
         // setting up a curl-handler
-        $this->ochandler = new OC_cURL();
+        $this->ochandler = new OCcURL();
         $this->ochandler->set_options([
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HTTPAUTH       => CURLAUTH_DIGEST,
