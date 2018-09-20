@@ -20,7 +20,7 @@ class MockcURL extends OCcURL
         $this->reset();
         $this->restricted_options = $restricted_options;
         $this->request_responses = $request_responses;
-        $this->last_response = new MockcURLRequestResponse();
+        $this->last_response = new MockcURLRequestResponse('');
     }
 
     protected function init()
@@ -67,12 +67,11 @@ class MockcURL extends OCcURL
     protected function execute_internal()
     {
         $this->last_response = $this->get_response_for_request($this->options);
-        if ($this->has_option(CURLOPT_RETURNTRANSFER)) {
-            if ($this->options[CURLOPT_RETURNTRANSFER]) {
+        if($this->has_option(CURLOPT_RETURNTRANSFER)){
+            if($this->options[CURLOPT_RETURNTRANSFER]){
                 return $this->last_response->body();
             }
         }
-
         return $this->last_response->boolean_result();
     }
 

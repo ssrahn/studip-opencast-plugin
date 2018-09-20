@@ -16,17 +16,17 @@ class MockcURLRequestResponse
 
     public function http_code()
     {
-        return 404;
+        return 200;
     }
 
     public function error_number()
     {
-        return 9999;
+        return 0;
     }
 
     public function error_message()
     {
-        return 'Mock for url "'.$this->url.'" not found...';
+        return '';
     }
 
     public function body()
@@ -36,7 +36,7 @@ class MockcURLRequestResponse
 
     public function boolean_result()
     {
-        return false;
+        return true;
     }
 
     public function info()
