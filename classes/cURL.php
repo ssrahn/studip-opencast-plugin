@@ -9,11 +9,18 @@ class cURL
 {
     private $handle;
     private $errors;
+    private $debug;
 
     public function __construct()
     {
         $this->init();
         $this->errors = [];
+        $this->debug = false;
+    }
+
+    public function set_debug($mode)
+    {
+        $this->debug = $mode;
     }
 
     private function init()
@@ -72,6 +79,10 @@ class cURL
         $response = curl_exec($this->handle);
         $this->log_error($this->last_error());
 
+        if($this->has_errors()){
+            var_dump($this->get_error_list());
+        }
+
         return $response;
     }
 
@@ -103,5 +114,10 @@ class cURL
     public function get_error_list()
     {
         return $this->errors;
+    }
+
+    public function has_errors()
+    {
+        return count($this->get_error_list()) > 0;
     }
 }

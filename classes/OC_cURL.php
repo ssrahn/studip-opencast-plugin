@@ -19,10 +19,11 @@ class OC_cURL extends cURL
 
     public function init_debug_mode()
     {
-        $this->debug = fopen('php://output', 'w');
+        $this->debug_stream = fopen('php://output', 'w');
+        $this->set_debug(true);
         $this->set_options([
             CURLOPT_VERBOSE => true,
-            CURLOPT_STDERR  => $this->debug
+            CURLOPT_STDERR  => $this->debug_stream
         ]);
     }
 }
