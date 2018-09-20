@@ -31,7 +31,7 @@ $restricted_fields = [CURLOPT_RETURNTRANSFER];
 /**
  * GENERATE AS USUAL
  */
-$curl = new MockcURL($restricted_fields, $responses);
+$curl = new MockcURL($restricted_fields,$responses);
 $curl->set_url('foo.de/bar.php');
 $curl->set_option(CURLOPT_RETURNTRANSFER, true);
 

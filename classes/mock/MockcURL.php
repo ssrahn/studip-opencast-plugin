@@ -23,6 +23,20 @@ class MockcURL extends OCcURL
         $this->last_response = new MockcURLRequestResponse('');
     }
 
+    public function set_response($to_set){
+        $this->remove_response($to_set->url);
+        $this->request_responses[] = $to_set;
+    }
+
+    public function remove_response($for_url){
+        for($index = 0; $index < count($this->request_responses); $index++){
+            if($this->request_responses[$index]->url == $for_url){
+                unset($this->request_responses[$index]);
+                break;
+            }
+        }
+    }
+
     protected function init()
     {
         $this->handle = true;
