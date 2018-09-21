@@ -142,46 +142,7 @@ class OCRestClient
      */
     function getJSON($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
-        if (isset($service_url)) {
-            $options = [
-                CURLOPT_URL           => $this->base_url . $service_url,
-                CURLOPT_FRESH_CONNECT => 1
-            ];
-
-            if (!$is_get) {
-                $options[CURLOPT_POST] = 1;
-                if (!empty($data)) {
-                    $options[CURLOPT_POSTFIELDS] = $data;
-                }
-            } else {
-                $options[CURLOPT_HTTPGET] = 1;
-            }
-
-            $this->ochandler->set_options($options);
-            $response = $this->ochandler->execute();
-            $httpCode = $this->ochandler->last_request_http_code();
-
-            if ($with_res_code) {
-                return [json_decode($response) ? : $response, $httpCode];
-            } else {
-                // throw exception if the endpoint is missing
-                if ($httpCode == 404) {
-                    if (DEBUG_CURL) {
-                        error_log('[Opencast-Plugin] Error calling "'
-                            . $this->base_url . $service_url
-                            . '" ' . strip_tags($response)
-                        );
-                    }
-
-                    return false;
-                } else {
-                    return json_decode($response);
-                }
-            }
-        } else {
-            throw new Exception(_("Es wurde keine Service URL angegeben"));
-        }
-
+        return $this->get('json', $service_url, $data, $is_get, $with_res_code);
     }
 
     /**
@@ -189,12 +150,16 @@ class OCRestClient
      */
     function getXML($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
+        return $this->get('xml', $service_url, $data, $is_get, $with_res_code);
+    }
+
+    function get($type, $service_url, $data = [], $is_get = true, $with_res_code = false)
+    {
         if (isset($service_url)) {
             $options = [
                 CURLOPT_URL           => $this->base_url . $service_url,
                 CURLOPT_FRESH_CONNECT => 1
             ];
-
             if (!$is_get) {
                 $options[CURLOPT_POST] = 1;
                 if (!empty($data)) {
@@ -203,18 +168,19 @@ class OCRestClient
             } else {
                 $options[CURLOPT_HTTPGET] = 1;
             }
-
             $this->ochandler->set_options($options);
             $response = $this->ochandler->execute();
-            $httpCode = $this->ochandler->last_request_http_code();
-
+            if ($type == 'json') {
+                $response = (json_decode($response) ? : $response);
+            }
+            $http_code = $this->ochandler->last_request_http_code();
             if ($with_res_code) {
-                return [$response, $httpCode];
+                return [$response, $http_code];
             } else {
-                // throw exception if the endpoint is missing
-                if ($httpCode == 404) {
+                if ($http_code == 404) {
                     if (DEBUG_CURL) {
-                        error_log('[Opencast-Plugin] Error calling "'
+                        error_log(
+                            '[Opencast-Plugin] Error calling "'
                             . $this->base_url . $service_url
                             . '" ' . strip_tags($response)
                         );
