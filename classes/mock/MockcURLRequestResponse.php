@@ -45,4 +45,30 @@ class MockcURLRequestResponse
         return $this->boolean_result;
     }
 
+    public function url_regex_ready(){
+        $escaped_url = preg_quote($this->url, '/');
+        return '/'.str_replace('\*','.*', $escaped_url).'/';
+    }
+
+    public function for_url($to_test){
+        return preg_match($this->url_regex_ready(),$to_test,$matches);
+    }
+
+    public function __toString()
+    {
+        $what_to_show = [
+            'url' => $this->url,
+            'url_pattern' => $this->url_regex_ready(),
+            'http_code' => $this->http_code,
+            'error_number' => $this->error_number,
+            'error_message' => $this->error_message,
+            'boolean_result' => ($this->boolean_result()?'true':'false'),
+            'body' => substr($this->body,0,25),
+            'info' => $this->info(),
+        ];
+
+        return print_r($what_to_show,true);
+    }
+
+
 }

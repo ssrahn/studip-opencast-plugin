@@ -22,12 +22,14 @@ require_once 'MockcURLRequestResponse.php';
  * GENERATING A FAKE RESPONSE
  */
 $responses[] = new MockcURLRequestResponse(
-    'foo.de/bar.php',
+    'foo.de/bar.php?id=*&name=*',
     404,
     '404 not found',
     28, #TimeoutError
     'custom error message test (real error in "number_interpreted"!'
 );
+
+echo '<pre>'.$responses[0].'</pre>';
 
 
 /**
@@ -40,7 +42,7 @@ $restricted_fields = [CURLOPT_RETURNTRANSFER];
  * GENERATE AS USUAL
  */
 $curl = new MockcURL($restricted_fields,$responses);
-$curl->set_url('foo.de/bar.php');
+$curl->set_url('foo.de/bar.php?id=2&name=3');
 $curl->set_option(CURLOPT_RETURNTRANSFER, true);
 
 

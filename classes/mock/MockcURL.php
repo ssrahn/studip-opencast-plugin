@@ -106,7 +106,7 @@ class MockcURL extends OCcURL
     protected function get_response_for_request($request)
     {
         foreach ($this->request_responses as $response) {
-            if ($response->url == $request[CURLOPT_URL]) {
+            if ($response->for_url($request[CURLOPT_URL])) {
                 return $response;
             }
         }
