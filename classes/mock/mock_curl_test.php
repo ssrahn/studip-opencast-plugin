@@ -17,7 +17,7 @@ $responses[] = new MockcURLRequestResponse(
     'foo.de/bar.php',
     404,
     '404 not found',
-    3,
+    28, #TimeoutError
     'custom error message test (real error in "number_interpreted"!'
 );
 

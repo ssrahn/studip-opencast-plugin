@@ -115,7 +115,7 @@ class MockcURL extends OCcURL
             $request[CURLOPT_URL],
             404,
             '',
-            9999,
+            1002,
             'Keine MockResponse zur URL "' . $request[CURLOPT_URL] . '" gefunden!',
             false
         );
