@@ -5,7 +5,7 @@
  * @version         1.0 (12:37)
  */
 
-class MockcURL extends OCcURL
+class MockcURL extends cURL
 {
     public $options;
     public $restricted_options = [];
@@ -124,5 +124,10 @@ class MockcURL extends OCcURL
     protected function get_info_internal()
     {
         return $this->last_response->info();
+    }
+
+    public function last_request_http_code()
+    {
+        return $this->get_specific_info(CURLINFO_HTTP_CODE);
     }
 }

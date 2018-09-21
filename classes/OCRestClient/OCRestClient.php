@@ -36,7 +36,7 @@ class OCRestClient
         return static::$me[$config_id];
     }
 
-    function __construct($config, $curl_class = 'OCcURL')
+    function __construct($config)
     {
         $this->base_url = $config['service_url'];
         $this->username = $config['service_user'];
@@ -44,7 +44,7 @@ class OCRestClient
         $this->oc_version = $config['service_version'];
 
         // setting up a curl-handler
-        $this->ochandler = new $curl_class();
+        $this->ochandler = new OCcURL();
         $this->ochandler->set_options([
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_HTTPAUTH       => CURLAUTH_DIGEST,

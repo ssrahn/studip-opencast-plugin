@@ -6,15 +6,25 @@
  */
 
 require_once '../../classes/cURL.php';
-require_once '../../classes/OCcURL.php';
-require_once '../../classes/mock/MockcURL.php';
 require_once '../../classes/mock/MockcURLRequestResponse.php';
+require_once '../../classes/mock/MockcURL.php';
 require_once '../../classes/OCRestClient/OCRestClient.php';
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * Class OCRestClientTest
+ * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
+ */
 class OCRestClientTest extends TestCase
 {
+
+    protected function setUp()
+    {
+        class_alias('MockcURL','OCcURL');
+    }
+
     public function testGetJSON()
     {
         $client = new OCRestClient([
@@ -22,7 +32,7 @@ class OCRestClientTest extends TestCase
             'service_user'     => 'test',
             'service_password' => 'test',
             'service_version'  => 1
-        ], 'MockcURL');
+        ]);
 
         $client->ochandler->set_response(new MockcURLRequestResponse(
             'foo.bar/test',
@@ -42,7 +52,7 @@ class OCRestClientTest extends TestCase
             'service_user'     => 'test',
             'service_password' => 'test',
             'service_version'  => 1
-        ], 'MockcURL');
+        ]);
 
         $client->ochandler->set_response(new MockcURLRequestResponse(
             'foo.bar/test',
@@ -62,7 +72,7 @@ class OCRestClientTest extends TestCase
             'service_user'     => 'test',
             'service_password' => 'test',
             'service_version'  => 1
-        ], 'MockcURL');
+        ]);
 
         $client->ochandler->set_response(new MockcURLRequestResponse(
             'foo.bar/test',
