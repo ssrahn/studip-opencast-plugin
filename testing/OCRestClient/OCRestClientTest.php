@@ -47,12 +47,12 @@ class OCRestClientTest extends TestCase
         $client->ochandler->set_response(new MockcURLRequestResponse(
             'foo.bar/test',
             200,
-            json_encode(['worked'=>true])
+            'worked!'
         ));
 
         $response = $client->getURL('test');
 
-        $this->assertTrue($response=='{"worked":true}');
+        $this->assertTrue($response=='worked!');
     }
 
     public function testGetXML()
@@ -67,11 +67,11 @@ class OCRestClientTest extends TestCase
         $client->ochandler->set_response(new MockcURLRequestResponse(
             'foo.bar/test',
             200,
-            json_encode(['worked'=>true])
+            '<worked>true</worked>'
         ));
 
         $response = $client->getXML('test');
 
-        $this->assertTrue($response=='{"worked":true}');
+        $this->assertTrue($response=='<worked>true</worked>');
     }
 }
