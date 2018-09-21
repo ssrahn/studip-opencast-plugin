@@ -11,6 +11,14 @@ require_once 'MockcURL.php';
 require_once 'MockcURLRequestResponse.php';
 
 /**
+ * PHP kann direkt Alias-Klassen erstellen mit 'class_alias(originalname, alias)!
+ * http://php.net/manual/de/function.class-alias.php (der Befehl muckt rum)
+ *
+ * Besser: 'use MockcURL as OCcURL;' funktioniert einwandfrei und ersetzt die
+ * Klasse ohne was anderes ändern zu müssen
+ */
+
+/**
  * GENERATING A FAKE RESPONSE
  */
 $responses[] = new MockcURLRequestResponse(
