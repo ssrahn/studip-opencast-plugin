@@ -13,6 +13,10 @@ class OCRestClient
     protected $password;
     public $serviceName = 'ParentRestClientClass';
 
+    const JSON = 'json';
+    const XML = 'xml';
+    const PLAIN = 'plain';
+
     static function getInstance($course_id = null)
     {
         $config_id = 1;     // use default config if nothing else is given
@@ -138,22 +142,24 @@ class OCRestClient
     }
 
     /**
-     *  function getJSON - performs a REST-Call and retrieves response in JSON
+     * function getJSON - performs a REST-Call and retrieves response in JSON
+     * @throws Exception
      */
     function getJSON($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
-        return $this->get('json', $service_url, $data, $is_get, $with_res_code);
+        return $this->getURL($service_url, self::JSON, $data, $is_get, $with_res_code);
     }
 
     /**
      * function getXML - performs a REST-Call and retrieves response in XML
+     * @throws Exception
      */
     function getXML($service_url, $data = [], $is_get = true, $with_res_code = false)
     {
-        return $this->get('xml', $service_url, $data, $is_get, $with_res_code);
+        return $this->getURL($service_url, self::XML, $data, $is_get, $with_res_code);
     }
 
-    function get($type, $service_url, $data = [], $is_get = true, $with_res_code = false)
+    function getURL($service_url, $type = self::PLAIN, $data = [], $is_get = true, $with_res_code = false)
     {
         if (isset($service_url)) {
             $options = [
@@ -170,7 +176,7 @@ class OCRestClient
             }
             $this->ochandler->set_options($options);
             $response = $this->ochandler->execute();
-            if ($type == 'json') {
+            if ($type == self::JSON) {
                 $response = (json_decode($response) ? : $response);
             }
             $http_code = $this->ochandler->last_request_http_code();
