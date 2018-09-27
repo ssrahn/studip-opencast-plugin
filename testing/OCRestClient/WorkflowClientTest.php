@@ -22,8 +22,8 @@ use PHPUnit\Framework\TestCase;
 class WorkflowClientTest extends TestCase
 {
 
-     private $client;
-     private $json_responses = [];
+    private $client;
+    private $json_responses = [];
 
     protected function setUp()
     {
@@ -94,6 +94,6 @@ class WorkflowClientTest extends TestCase
 
     public function testGetTaggedWorkflowDefinitions()
     {
-       $this->assertCount(2,$this->client->getTaggedWorkflowDefinitions());
+        $this->assertCount(2, $this->client->getTaggedWorkflowDefinitions());
     }
 }
