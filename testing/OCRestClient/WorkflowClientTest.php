@@ -23,6 +23,7 @@ class WorkflowClientTest extends TestCase
 {
 
      private $client;
+     private $json_responses = [];
 
     protected function setUp()
     {
@@ -46,19 +47,21 @@ class WorkflowClientTest extends TestCase
         ));
 
         //Täuscht die cURL Antworten vor
+        $this->json_responses[0] = '{"definitions":{"definition":[{"id":1,"tags":{"tag":["tag_1","tag_2"]},"description":"test_desc","title":"test_title"},{"id":2,"tags":{"tag":["tag_1","tag_2"]},"description":"test_desc","title":"test_title"}]}}';
         MockcURLResponse::set_response(
             new MockcURLResponse(
                 'definitions.json', 200,
-                '{"definitions":{"definition":[{"id":1,"tags":{"tag":["tag_1","tag_2"]},"description":"test_desc","title":"test_title"},{"id":2,"tags":{"tag":["tag_1","tag_2"]},"description":"test_desc","title":"test_title"}]}}'
+                $this->json_responses[0]
             )
         );
         MockcURLResponse::set_response(
             new MockcURLResponse('/remove/*', 204)
         );
+        $this->json_responses[1] = '{"workflows":{"workflow":[{"id":1},{"id":2}]}}';
         MockcURLResponse::set_response(
             new MockcURLResponse(
                 '/instances.json?state=&q=&seriesId=*&seriesTitle=&creator=&contributor=&fromdate=&todate=&language=&license=&title=&subject=&workflowdefinition=&mp=&op=&sort=&startPage=0&count=1000&compact=true',
-                200, '{"workflows":{"workflow":[{"id":1},{"id":2}]}}'
+                200, $this->json_responses[1]
             )
         );
         MockcURLResponse::set_response(
@@ -76,12 +79,14 @@ class WorkflowClientTest extends TestCase
 
     public function testGetDefinitions()
     {
-        $this->assertTrue(count($this->client->getDefinitions()->definitions->definition)==2);
+        $json_object = json_decode($this->json_responses[0]);
+        $this->assertEquals($json_object, $this->client->getDefinitions(1));
     }
 
     public function testGetInstances()
     {
-        $this->assertCount(2,$this->client->getInstances(1)->workflows->workflow);
+        $json_object = json_decode($this->json_responses[1]);
+        $this->assertEquals($json_object, $this->client->getInstances(1));
     }
 
     public function testRemoveInstanceComplete()
