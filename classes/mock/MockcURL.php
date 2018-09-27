@@ -9,32 +9,16 @@ class MockcURL extends cURL
 {
     public $options;
     public $restricted_options = [];
-    public $request_responses = [];
     public $last_response;
 
-    public function __construct($restricted_options = [], $request_responses = [])
+    public function __construct($restricted_options = [])
     {
         $this->init();
         $this->errors = [];
         $this->debug = false;
         $this->reset();
         $this->restricted_options = $restricted_options;
-        $this->request_responses = $request_responses;
         $this->last_response = new MockcURLResponse('');
-    }
-
-    public function set_response($to_set){
-        $this->remove_response($to_set->url);
-        $this->request_responses[] = $to_set;
-    }
-
-    public function remove_response($for_url){
-        for($index = 0; $index < count($this->request_responses); $index++){
-            if($this->request_responses[$index]->url == $for_url){
-                unset($this->request_responses[$index]);
-                break;
-            }
-        }
     }
 
     protected function init()
@@ -105,20 +89,7 @@ class MockcURL extends cURL
 
     protected function get_response_for_request($request)
     {
-        foreach ($this->request_responses as $response) {
-            if ($response->for_url($request[CURLOPT_URL])) {
-                return $response;
-            }
-        }
-
-        return new MockcURLResponse(
-            $request[CURLOPT_URL],
-            404,
-            '',
-            1002,
-            'Keine MockResponse zur URL "' . $request[CURLOPT_URL] . '" gefunden!',
-            false
-        );
+        return MockcURLResponse::for($request);
     }
 
     protected function get_info_internal()

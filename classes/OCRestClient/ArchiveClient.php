@@ -15,7 +15,10 @@ class ArchiveClient extends OCRestClient
     }
 
     function deleteEvent($eventId) {
-        $response = $this->getJSON("/".$eventId, array(), false, false, 'DELETE');
+        $this->ochandler->set_options([
+            CURLOPT_CUSTOMREQUEST => 'DELETE'
+        ]);
+        $response = $this->getJSON("/".$eventId, array(), false, false);
         return $response;
     }
 

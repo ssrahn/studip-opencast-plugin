@@ -6,7 +6,7 @@
  */
 
 require_once '../../classes/cURL.php';
-require_once '../../classes/mock/MockcURLRequestResponse.php';
+require_once '../../classes/mock/MockcURLResponse.php';
 require_once '../../classes/mock/MockcURL.php';
 require_once '../../classes/OCRestClient/OCRestClient.php';
 
@@ -33,11 +33,9 @@ class OCRestClientTest extends TestCase
 
     public function testGetJSON()
     {
-        $this->client->ochandler->set_response(new MockcURLResponse(
-            'foo.bar/test',
-            200,
-            json_encode(['worked' => true])
-        ));
+        MockcURLResponse::set_response(
+            new MockcURLResponse('foo.bar/test',200, json_encode(['worked' => true]))
+        );
 
         $response = $this->client->getJSON('test');
 
@@ -46,11 +44,9 @@ class OCRestClientTest extends TestCase
 
     public function testGetURL()
     {
-        $this->client->ochandler->set_response(new MockcURLResponse(
-            'foo.bar/test',
-            200,
-            'worked!'
-        ));
+        MockcURLResponse::set_response(
+            new MockcURLResponse('foo.bar/test',200, 'worked!')
+        );
 
         $response = $this->client->getURL('test');
 
@@ -59,11 +55,10 @@ class OCRestClientTest extends TestCase
 
     public function testGetXML()
     {
-        $this->client->ochandler->set_response(new MockcURLResponse(
-            'foo.bar/test',
-            200,
-            '<worked>true</worked>'
-        ));
+
+        MockcURLResponse::set_response(
+            new MockcURLResponse('foo.bar/test',200, '<worked>true</worked>')
+        );
 
         $response = $this->client->getXML('test');
 

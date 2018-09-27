@@ -7,6 +7,52 @@
 
 class MockcURLResponse
 {
+
+    private static $responses = [];
+
+    public static function set_response(MockcURLResponse $response)
+    {
+        static::$responses[static::as_id(static::clean($response->url))] = $response;
+    }
+
+    public static function has_response($for_url)
+    {
+        return isset(static::$responses[static::as_id($for_url)]);
+    }
+
+    public static function for($request)
+    {
+        $url = static::clean($request[CURLOPT_URL]);
+        $plain_response = new MockcURLResponse(
+            $url,
+            404,
+            '',
+            1002,
+            'Keine MockcURLResponse zur URL "' . $request[CURLOPT_URL] . '" gefunden!',
+            false
+        );
+        if (self::has_response($url)) {
+            $plain_response = static::$responses[static::as_id($url)];
+        }
+
+        return $plain_response;
+    }
+
+    public static function as_id($string)
+    {
+        return md5($string);
+    }
+
+    public static function clean($query)
+    {
+        $breaks_gone = str_replace(["\r\n", "\r", "\n"], '', $query);
+
+        return preg_replace('/\s+/', ' ', $breaks_gone);
+    }
+
+
+    ##################################################################################################
+
     public $url;
     public $http_code;
     public $error_number;
@@ -39,35 +85,39 @@ class MockcURLResponse
 
     public function boolean_result()
     {
-        if($this->error_number > 0 || $this->error_message != ''){
+        if ($this->error_number > 0 || $this->error_message != '') {
             return false;
         }
+
         return $this->boolean_result;
     }
 
-    public function url_regex_ready(){
+    public function url_regex_ready()
+    {
         $escaped_url = preg_quote($this->url, '/');
-        return '/'.str_replace('\*','.*', $escaped_url).'/';
+
+        return '/' . str_replace('\*', '.*', $escaped_url) . '/';
     }
 
-    public function for_url($to_test){
-        return preg_match($this->url_regex_ready(),$to_test,$matches);
+    public function for_url($to_test)
+    {
+        return preg_match($this->url_regex_ready(), $to_test, $matches);
     }
 
     public function __toString()
     {
         $what_to_show = [
-            'url' => $this->url,
-            'url_pattern' => $this->url_regex_ready(),
-            'http_code' => $this->http_code,
-            'error_number' => $this->error_number,
-            'error_message' => $this->error_message,
-            'boolean_result' => ($this->boolean_result()?'true':'false'),
-            'body' => substr($this->body,0,25),
-            'info' => $this->info(),
+            'url'            => $this->url,
+            'url_pattern'    => $this->url_regex_ready(),
+            'http_code'      => $this->http_code,
+            'error_number'   => $this->error_number,
+            'error_message'  => $this->error_message,
+            'boolean_result' => ($this->boolean_result() ? 'true' : 'false'),
+            'body'           => substr($this->body, 0, 25),
+            'info'           => $this->info(),
         ];
 
-        return print_r($what_to_show,true);
+        return print_r($what_to_show, true);
     }
 
 

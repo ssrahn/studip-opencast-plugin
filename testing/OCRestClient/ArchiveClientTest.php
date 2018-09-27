@@ -6,7 +6,7 @@
  */
 
 require_once '../../classes/cURL.php';
-require_once '../../classes/mock/MockcURLRequestResponse.php';
+require_once '../../classes/mock/MockcURLResponse.php';
 require_once '../../classes/mock/MockcURL.php';
 require_once '../../classes/OCRestClient/OCRestClient.php';
 require_once '../../classes/mock/MockDBManager.php';
@@ -28,11 +28,12 @@ class ArchiveClientTest extends TestCase
         class_alias('MockcURL', 'OCcURL');
         class_alias('MockDBManager', 'DBManager');
 
+        //Wird für die Erstellung des Clients benötigt, config wäre sonst fehlerhaft
         MockDBResponse::set_response(new MockDBResponse(
             'SELECT * FROM `oc_endpoints` WHERE service_type = ? AND config_id = ?',
             ['service_url', 'service_host', 'service_type', 'config_id'],
             [
-                ['test', 'test', 'test', 1]
+                ['foo.bar/', 'test', 'test', 1]
             ]
         ));
 
@@ -41,7 +42,7 @@ class ArchiveClientTest extends TestCase
 
     public function testApplyWorkflow()
     {
-        print_r($this->client->getConfig('archive'));
+
     }
 
     public function testDeleteEvent()
