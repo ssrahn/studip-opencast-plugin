@@ -5,7 +5,7 @@
  * @version         1.0 (13:02)
  */
 
-class MockcURLRequestResponse
+class MockcURLResponse
 {
     public $url;
     public $http_code;

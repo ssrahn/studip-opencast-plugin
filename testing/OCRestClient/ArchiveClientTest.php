@@ -30,9 +30,9 @@ class ArchiveClientTest extends TestCase
 
         MockDBResponse::set_response(new MockDBResponse(
             'SELECT * FROM `oc_endpoints` WHERE service_type = ? AND config_id = ?',
-            ['service_url','service_host','service_type', 'config_id'],
+            ['service_url', 'service_host', 'service_type', 'config_id'],
             [
-                ['test','test','test',1]
+                ['test', 'test', 'test', 1]
             ]
         ));
 

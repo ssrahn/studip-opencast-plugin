@@ -21,7 +21,7 @@ require_once 'MockcURLRequestResponse.php';
 /**
  * GENERATING A FAKE RESPONSE
  */
-$responses[] = new MockcURLRequestResponse(
+$responses[] = new MockcURLResponse(
     'foo.de/bar.php?id=*&name=*',
     404,
     '404 not found',

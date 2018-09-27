@@ -33,7 +33,7 @@ class OCRestClientTest extends TestCase
 
     public function testGetJSON()
     {
-        $this->client->ochandler->set_response(new MockcURLRequestResponse(
+        $this->client->ochandler->set_response(new MockcURLResponse(
             'foo.bar/test',
             200,
             json_encode(['worked' => true])
@@ -46,7 +46,7 @@ class OCRestClientTest extends TestCase
 
     public function testGetURL()
     {
-        $this->client->ochandler->set_response(new MockcURLRequestResponse(
+        $this->client->ochandler->set_response(new MockcURLResponse(
             'foo.bar/test',
             200,
             'worked!'
@@ -59,7 +59,7 @@ class OCRestClientTest extends TestCase
 
     public function testGetXML()
     {
-        $this->client->ochandler->set_response(new MockcURLRequestResponse(
+        $this->client->ochandler->set_response(new MockcURLResponse(
             'foo.bar/test',
             200,
             '<worked>true</worked>'

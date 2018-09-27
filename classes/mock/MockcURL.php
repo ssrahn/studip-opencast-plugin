@@ -20,7 +20,7 @@ class MockcURL extends cURL
         $this->reset();
         $this->restricted_options = $restricted_options;
         $this->request_responses = $request_responses;
-        $this->last_response = new MockcURLRequestResponse('');
+        $this->last_response = new MockcURLResponse('');
     }
 
     public function set_response($to_set){
@@ -111,7 +111,7 @@ class MockcURL extends cURL
             }
         }
 
-        return new MockcURLRequestResponse(
+        return new MockcURLResponse(
             $request[CURLOPT_URL],
             404,
             '',
