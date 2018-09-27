@@ -33,7 +33,7 @@ class ArchiveClientTest extends TestCase
             'SELECT * FROM `oc_endpoints` WHERE service_type = ? AND config_id = ?',
             ['service_url', 'service_host', 'service_type', 'config_id'],
             [
-                ['foo.bar/', 'test', 'test', 1]
+                ['archive', 'foo.bar/', 'archive', 1]
             ]
         ));
 
@@ -42,11 +42,19 @@ class ArchiveClientTest extends TestCase
 
     public function testApplyWorkflow()
     {
+        MockcURLResponse::set_response(
+            new MockcURLResponse('archive/apply/*', 204)
+        );
 
+        $this->assertTrue($this->client->applyWorkflow(1,1));
     }
 
     public function testDeleteEvent()
     {
+        MockcURLResponse::set_response(
+            new MockcURLResponse('archive/*', 200)
+        );
 
+        $this->assertTrue($this->client->deleteEvent(1)=='');
     }
 }

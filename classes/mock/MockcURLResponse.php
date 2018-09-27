@@ -12,17 +12,23 @@ class MockcURLResponse
 
     public static function set_response(MockcURLResponse $response)
     {
-        static::$responses[static::as_id(static::clean($response->url))] = $response;
+        static::$responses[static::as_id($response->url)] = $response;
     }
 
     public static function has_response($for_url)
     {
-        return isset(static::$responses[static::as_id($for_url)]);
+        foreach (static::$responses as $key=>$response){
+            if($response->for_url($for_url)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public static function for($request)
     {
-        $url = static::clean($request[CURLOPT_URL]);
+        $url = $request[CURLOPT_URL];
+
         $plain_response = new MockcURLResponse(
             $url,
             404,
@@ -32,7 +38,11 @@ class MockcURLResponse
             false
         );
         if (self::has_response($url)) {
-            $plain_response = static::$responses[static::as_id($url)];
+            foreach (static::$responses as $key=>$response){
+                if($response->for_url($url)){
+                    return $response;
+                }
+            }
         }
 
         return $plain_response;
