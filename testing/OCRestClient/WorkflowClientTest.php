@@ -79,14 +79,12 @@ class WorkflowClientTest extends TestCase
 
     public function testGetDefinitions()
     {
-        $json_object = json_decode($this->json_responses[0]);
-        $this->assertEquals($json_object, $this->client->getDefinitions(1));
+        $this->assertJsonStringEqualsJsonString($this->json_responses[0], json_encode($this->client->getDefinitions(1)));
     }
 
     public function testGetInstances()
     {
-        $json_object = json_decode($this->json_responses[1]);
-        $this->assertEquals($json_object, $this->client->getInstances(1));
+        $this->assertJsonStringEqualsJsonString($this->json_responses[1], json_encode($this->client->getInstances(1)));
     }
 
     public function testRemoveInstanceComplete()
