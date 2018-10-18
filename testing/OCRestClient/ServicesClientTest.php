@@ -35,7 +35,7 @@ class ServicesClientTest extends TestCase
             'SELECT * FROM `oc_endpoints` WHERE service_type = ? AND config_id = ?',
             ['service_url', 'service_host', 'service_type', 'config_id'],
             [
-                ['workflow', 'foo.bar/', 'services', 1]
+                ['services', 'foo.bar/', 'services', 1]
             ]
         ));
         MockDBResponse::set_response(new MockDBResponse(
@@ -60,6 +60,8 @@ class ServicesClientTest extends TestCase
 
     public function testGetRESTComponents()
     {
-        $this->assertJsonStringEqualsJsonString('[{"type":"org.opencastproject.adminui.endpoint.AclEndpoint","host":"https://vm123.rz.uos.de","path":"/admin-ng/acl","active":true,"online":true,"maintenance":false,"jobproducer":false,"onlinefrom":"2018-08-21T13:34:28+02:00","service_state":"NORMAL","state_changed":"2018-07-03T13:19:17+02:00","error_state_trigger":0,"warning_state_trigger":0}]',json_encode($this->client->getRESTComponents(),JSON_UNESCAPED_SLASHES));
+        $this->assertJsonStringEqualsJsonString('[{"type":"org.opencastproject.adminui.endpoint.AclEndpoint","host":"https://vm123.rz.uos.de","path":"/admin-ng/acl","active":true,"online":true,"maintenance":false,"jobproducer":false,"onlinefrom":"2018-08-21T13:34:28+02:00","service_state":"NORMAL","state_changed":"2018-07-03T13:19:17+02:00","error_state_trigger":0,"warning_state_trigger":0}]',
+            json_encode($this->client->getRESTComponents(),JSON_UNESCAPED_SLASHES)
+        );
     }
 }
