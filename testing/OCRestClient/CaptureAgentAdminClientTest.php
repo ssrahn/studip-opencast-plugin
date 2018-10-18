@@ -66,7 +66,7 @@ class CaptureAgentAdminClientTest extends TestCase
     public function testGetCaptureAgents()
     {
         $this->assertJsonStringEqualsJsonString('[{"name":"extron93e07","state":"offline","url":"http://131.173.58.90","time-since-last-update":3275145750,"capabilities":{"item":[{"key":"capture.device.defaults.Flavor","value":"presentation/source"},{"key":"capture.device.names","value":"defaults"},{"key":"capture.device.defaults.Encoder.Preset","value":"1080p High"},{"key":"capture.device.defaults.Layout.Preset","value":"nacst 16/9 side by side"},{"key":"capture.device.defaults.Flavor_1","value":"presenter/source"}]}}]',
-            json_encode($this->client->GetCaptureAgents(),JSON_UNESCAPED_SLASHES)
+            json_encode($this->client->GetCaptureAgents(), JSON_UNESCAPED_SLASHES)
         );
     }
 

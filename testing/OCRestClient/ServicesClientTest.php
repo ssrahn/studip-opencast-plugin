@@ -1,8 +1,8 @@
 <?php
 /**
- * @author          Jan-Frederik Leissner <jleissner@uos.de>
+ * @author              Jan-Frederik Leissner <jleissner@uos.de>
  * @copyright       (c) Authors
- * @version         1.0 (11:26)
+ * @version             1.0 (11:26)
  */
 
 require_once '../../classes/cURL.php';
@@ -61,7 +61,7 @@ class ServicesClientTest extends TestCase
     public function testGetRESTComponents()
     {
         $this->assertJsonStringEqualsJsonString('[{"type":"org.opencastproject.adminui.endpoint.AclEndpoint","host":"https://vm123.rz.uos.de","path":"/admin-ng/acl","active":true,"online":true,"maintenance":false,"jobproducer":false,"onlinefrom":"2018-08-21T13:34:28+02:00","service_state":"NORMAL","state_changed":"2018-07-03T13:19:17+02:00","error_state_trigger":0,"warning_state_trigger":0}]',
-            json_encode($this->client->getRESTComponents(),JSON_UNESCAPED_SLASHES)
+            json_encode($this->client->getRESTComponents(), JSON_UNESCAPED_SLASHES)
         );
     }
 }

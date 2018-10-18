@@ -34,7 +34,7 @@ class OCRestClientTest extends TestCase
     public function testGetJSON()
     {
         MockcURLResponse::set_response(
-            new MockcURLResponse('foo.bar/test',200, json_encode(['worked' => true]))
+            new MockcURLResponse('foo.bar/test', 200, json_encode(['worked' => true]))
         );
 
         $response = $this->client->getJSON('test');
@@ -45,7 +45,7 @@ class OCRestClientTest extends TestCase
     public function testGetURL()
     {
         MockcURLResponse::set_response(
-            new MockcURLResponse('foo.bar/test',200, 'worked!')
+            new MockcURLResponse('foo.bar/test', 200, 'worked!')
         );
 
         $response = $this->client->getURL('test');
@@ -57,7 +57,7 @@ class OCRestClientTest extends TestCase
     {
 
         MockcURLResponse::set_response(
-            new MockcURLResponse('foo.bar/test',200, '<worked>true</worked>')
+            new MockcURLResponse('foo.bar/test', 200, '<worked>true</worked>')
         );
 
         $response = $this->client->getXML('test');

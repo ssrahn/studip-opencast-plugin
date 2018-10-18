@@ -46,7 +46,7 @@ class ArchiveClientTest extends TestCase
             new MockcURLResponse('archive/apply/*', 204)
         );
 
-        $this->assertTrue($this->client->applyWorkflow(1,1));
+        $this->assertTrue($this->client->applyWorkflow(1, 1));
     }
 
     public function testDeleteEvent()
@@ -55,6 +55,6 @@ class ArchiveClientTest extends TestCase
             new MockcURLResponse('archive/*', 200)
         );
 
-        $this->assertTrue($this->client->deleteEvent(1)=='');
+        $this->assertTrue($this->client->deleteEvent(1) == '');
     }
 }
