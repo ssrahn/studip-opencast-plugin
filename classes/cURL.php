@@ -118,6 +118,18 @@ class cURL
         return count($this->get_error_list()) > 0;
     }
 
+    public function set_url($url)
+    {
+        $this->set_option(CURLOPT_URL, $url);
+    }
+
+    public function get_url($default = '!NO URL GIVEN!')
+    {
+        if ($this->has_option(CURLOPT_URL)) {
+
+        }
+    }
+
     protected function set_option_internal($option_key, $option_value)
     {
         return curl_setopt($this->handle, $option_key, $option_value);

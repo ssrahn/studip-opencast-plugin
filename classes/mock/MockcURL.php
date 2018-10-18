@@ -70,7 +70,6 @@ class MockcURL extends cURL
                 return $this->last_response->body;
             }
         }
-
         return $this->last_response->boolean_result();
     }
 

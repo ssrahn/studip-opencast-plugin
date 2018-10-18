@@ -8,7 +8,7 @@
 require_once '../cURL.php';
 require_once '../OCcURL.php';
 require_once 'MockcURL.php';
-require_once 'MockcURLRequestResponse.php';
+require_once 'MockcURLResponse.php';
 
 /**
  * PHP kann direkt Alias-Klassen erstellen mit 'class_alias(originalname, alias)!
@@ -21,15 +21,15 @@ require_once 'MockcURLRequestResponse.php';
 /**
  * GENERATING A FAKE RESPONSE
  */
-$responses[] = new MockcURLResponse(
-    'foo.de/bar.php?id=*&name=*',
-    404,
-    '404 not found',
-    28, #TimeoutError
-    'custom error message test (real error in "number_interpreted"!'
+MockcURLResponse::set_response(
+    new MockcURLResponse(
+        'foo.de/bar.php?id=*&name=*',
+        404,
+        '404 not found',
+        28, #TimeoutError
+        'custom error message test (real error in "number_interpreted"!'
+    )
 );
-
-echo '<pre>'.$responses[0].'</pre>';
 
 
 /**
@@ -41,7 +41,7 @@ $restricted_fields = [CURLOPT_RETURNTRANSFER];
 /**
  * GENERATE AS USUAL
  */
-$curl = new MockcURL($restricted_fields,$responses);
+$curl = new MockcURL($restricted_fields);
 $curl->set_url('foo.de/bar.php?id=2&name=3');
 $curl->set_option(CURLOPT_RETURNTRANSFER, true);
 

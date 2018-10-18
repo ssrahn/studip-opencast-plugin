@@ -27,11 +27,8 @@ class OCcURL extends cURL
         ]);
     }
 
-    public function set_url($url){
-        $this->set_option(CURLOPT_URL, $url);
-    }
-
-    public function set_custom_method($method){
+    public function set_custom_method($method)
+    {
         $this->set_option(CURLOPT_CUSTOMREQUEST, $method);
     }
 }
