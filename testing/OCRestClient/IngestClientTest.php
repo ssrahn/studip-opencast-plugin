@@ -110,16 +110,9 @@ class IngestClientTest extends TestCase
         );
         MockcURLResponse::set_response(
             new MockcURLResponse(
-                '/schedule',
-                200,
-                $this->responses[0]
-            )
-        );
-        MockcURLResponse::set_response(
-            new MockcURLResponse(
                 '/schedule/*',
                 200,
-                $this->responses[0]
+                ''
             )
         );
 
@@ -188,6 +181,6 @@ class IngestClientTest extends TestCase
 
     public function testSchedule()
     {
-
+        $this->assertEquals(['',200],$this->client->schedule('empty_media_package','no_caps','fast'));
     }
 }
