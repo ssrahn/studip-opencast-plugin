@@ -17,11 +17,12 @@ require_once '../../classes/OCRestClient/IngestClient.php';
 function studip_utf8encode($data)
 {
     if (is_array($data)) {
-        $new_data = array();
+        $new_data = [];
         foreach ($data as $key => $value) {
             $key = studip_utf8encode($key);
             $new_data[$key] = studip_utf8encode($value);
         }
+
         return $new_data;
     }
 
@@ -29,8 +30,8 @@ function studip_utf8encode($data)
         return $data;
     } else {
         return mb_decode_numericentity(
-            mb_convert_encoding($data,'UTF-8', 'WINDOWS-1252'),
-            array(0x100, 0xffff, 0, 0xffff),
+            mb_convert_encoding($data, 'UTF-8', 'WINDOWS-1252'),
+            [0x100, 0xffff, 0, 0xffff],
             'UTF-8'
         );
     }
@@ -132,7 +133,7 @@ class IngestClientTest extends TestCase
                                 <dcterms:creator><![CDATA[test_creator]]></dcterms:creator>
                                 <dcterms:contributor><![CDATA[test_contributor]]></dcterms:contributor>
                                 <dcterms:created xsi:type="dcterms:W3CDTF">' . OCModel::getDCTime(0) . '</dcterms:created>                     
-                                <dcterms:temporal xsi:type="dcterms:Period">start='. OCModel::getDCTime(0) .'; end='. OCModel::getDCTime(10000) .'; scheme=W3C-DTF;</dcterms:temporal>
+                                <dcterms:temporal xsi:type="dcterms:Period">start=' . OCModel::getDCTime(0) . '; end=' . OCModel::getDCTime(10000) . '; scheme=W3C-DTF;</dcterms:temporal>
                                 <dcterms:description><![CDATA[test_description]]></dcterms:description>
                                 <dcterms:subject><![CDATA[test_abstract]]></dcterms:subject>
                                 <dcterms:language><![CDATA[test_language]]></dcterms:language>
@@ -147,13 +148,13 @@ class IngestClientTest extends TestCase
 
     public function testCreateMediaPackage()
     {
-        $this->assertXmlStringEqualsXmlString($this->responses[0],$this->client->createMediaPackage());
+        $this->assertXmlStringEqualsXmlString($this->responses[0], $this->client->createMediaPackage());
     }
 
     public function testAddTrack()
     {
         $media_package = $this->client->createMediaPackage();
-        $this->assertXmlStringEqualsXmlString($this->responses[1],$this->client->addTrack(
+        $this->assertXmlStringEqualsXmlString($this->responses[1], $this->client->addTrack(
             $media_package,
             'https://vm123.rz.uos.de/files/mediapackage/978935c6-ffa7-4b1b-89fd-263e15f7d8d2/3862d47c-cc22-4d88-a91c-2cb62a881e10/test.mp4',
             'presenter/source'
@@ -163,7 +164,7 @@ class IngestClientTest extends TestCase
     public function testAddDCCatalog()
     {
         $media_package = $this->client->createMediaPackage();
-        $this->assertXmlStringEqualsXmlString($this->responses[2],$this->client->addDCCatalog(
+        $this->assertXmlStringEqualsXmlString($this->responses[2], $this->client->addDCCatalog(
             $media_package,
             $this->dublincore_basic,
             'dublincore/episode'
@@ -173,7 +174,7 @@ class IngestClientTest extends TestCase
     public function testIngest()
     {
         $media_package = $this->client->createMediaPackage();
-        $this->assertXmlStringEqualsXmlString($this->responses[3],$this->client->ingest(
+        $this->assertXmlStringEqualsXmlString($this->responses[3], $this->client->ingest(
             $media_package,
             'fast'
         ));
@@ -181,6 +182,6 @@ class IngestClientTest extends TestCase
 
     public function testSchedule()
     {
-        $this->assertEquals(['',200],$this->client->schedule('empty_media_package','no_caps','fast'));
+        $this->assertEquals(['', 200], $this->client->schedule('empty_media_package', 'no_caps', 'fast'));
     }
 }
