@@ -32,5 +32,12 @@ require_once 'classes/OCRestClient/ServicesClient.php';
 require_once 'classes/OCRestClient/UploadClient.php';
 require_once 'classes/OCRestClient/WorkflowClient.php';
 
+require_once 'classes/provider/JobManagerProviderInterface.php';
+require_once 'classes/provider/JobManagerProviderStandard.php';
+require_once 'classes/provider/JsonFileProviderInterface.php';
+require_once 'classes/provider/JsonFileProviderStandard.php';
+require_once 'classes/provider/RestClientProviderInterface.php';
+require_once 'classes/provider/RestClientProviderStandard.php';
+
 /* cronjobs */
 require_once 'lib/classes/CronJob.class.php';

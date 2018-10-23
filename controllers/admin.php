@@ -372,7 +372,7 @@ class AdminController extends OpencastController
         ];
 
         foreach ($undeleted_jobs as $undeleted_job_id){
-            $job = new OCJob($undeleted_job_id);
+            $job = new OCJob($undeleted_job_id,new RestClientProviderStandard(),new JsonFileProviderStandard(),new JobManagerProviderStandard());
             $this->upload_jobs[($job->both_uploads_succeeded() ? 'successful' : 'unfinished')][] = $job;
         }
 

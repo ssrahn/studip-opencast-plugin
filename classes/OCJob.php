@@ -12,25 +12,41 @@ class OCJob
     private $upload_chunk_info;
     private $opencast_info;
 
+    private $rest_client_provider;
+    private $json_file_provider;
+    private $job_mananger_provider;
+    private $time_provider;
+
     private $ingest_client;
     private $upload_client;
 
-    public function __construct($id)
+    public function __construct(
+        $id,
+        RestClientProviderInterface $rest_client_provider,
+        JsonFileProviderInterface $json_file_provider,
+        JobManagerProviderInterface $job_manager_provider,
+        TimeProviderInterface $time_provider
+    )
     {
+        $this->rest_client_provider = $rest_client_provider;
+        $this->json_file_provider = $json_file_provider;
+        $this->job_mananger_provider = $job_manager_provider;
+        $this->time_provider = $time_provider;
+
         $this->id = $id;
         $this->load_job_data();
-        $this->ingest_client = new IngestClient();
-        $this->upload_client = new UploadClient();
+        $this->ingest_client = $rest_client_provider->getClientAsNew('IngestClient');
+        $this->upload_client = $rest_client_provider->getClientAsNew('UploadClient');
         $this->opencast_init();
     }
 
     private function load_job_data()
     {
-        $data_file = new OCJsonFile(OCJobManager::job_path($this->id) . '/job_data.json');
+        $data_file = $this->json_file_provider->generate($this->job_mananger_provider::job_path($this->id) . '/job_data.json');
         $this->data = $data_file->content;
-        $this->local_chunk_info = new OCJsonFile(OCJobManager::job_path($this->id) . '/local_chunk_info.json');
-        $this->upload_chunk_info = new OCJsonFile(OCJobManager::job_path($this->id) . '/upload_chunk_info.json');
-        $this->opencast_info = new OCJsonFile(OCJobManager::job_path($this->id) . '/opencast_info.json');
+        $this->local_chunk_info = $this->json_file_provider->generate($this->job_mananger_provider::job_path($this->id) . '/local_chunk_info.json');
+        $this->upload_chunk_info = $this->json_file_provider->generate($this->job_mananger_provider::job_path($this->id) . '/upload_chunk_info.json');
+        $this->opencast_info = $this->json_file_provider->generate($this->job_mananger_provider::job_path($this->id) . '/opencast_info.json');
     }
 
     /**
@@ -44,10 +60,10 @@ class OCJob
     public function complete_data()
     {
         return [
-            'job_data'          => new OCJsonFile(OCJobManager::job_path($this->id) . '/job_data.json'),
-            'local_chunk_info'  => new OCJsonFile(OCJobManager::job_path($this->id) . '/local_chunk_info.json'),
-            'upload_chunk_info' => new OCJsonFile(OCJobManager::job_path($this->id) . '/upload_chunk_info.json'),
-            'opencast_info'     => new OCJsonFile(OCJobManager::job_path($this->id) . '/opencast_info.json')
+            'job_data'          => $this->json_file_provider->generate($this->job_mananger_provider::job_path($this->id) . '/job_data.json'),
+            'local_chunk_info'  => $this->json_file_provider->generate($this->job_mananger_provider::job_path($this->id) . '/local_chunk_info.json'),
+            'upload_chunk_info' => $this->json_file_provider->generate($this->job_mananger_provider::job_path($this->id) . '/upload_chunk_info.json'),
+            'opencast_info'     => $this->json_file_provider->generate($this->job_mananger_provider::job_path($this->id) . '/opencast_info.json')
         ];
     }
 
@@ -70,15 +86,16 @@ class OCJob
     /**
      * Upload a chunk locally
      *
-     * @param $tmp_path     string the path to the source file
-     * @param $chunk_number int the number for this chunk
+     * @param                             $tmp_path     string the path to the source file
+     * @param                             $chunk_number int the number for this chunk
+     * @param FileSystemProviderInterface $file_system
      */
-    public function upload_local($tmp_path, $chunk_number)
+    public function upload_local($tmp_path, $chunk_number, FileSystemProviderInterface $file_system)
     {
-        if (move_uploaded_file($tmp_path, OCJobManager::chunk_path($this->id, $chunk_number))) {
+        if ($file_system->move_uploaded_file($tmp_path, $this->job_mananger_provider::chunk_path($this->id, $chunk_number))) {
             $this->local_chunk_info['chunk_' . $chunk_number] = [
                 'number'            => $chunk_number,
-                'local_upload_time' => time()
+                'local_upload_time' => $this->time_provider->time()
             ];
             $this->upload_chunk_info['chunk_' . $chunk_number] = [
                 'number'         => $chunk_number,
@@ -173,7 +190,7 @@ class OCJob
 
     private function opencast_init()
     {
-        if (OCJobManager::matterhorn_service_available()) {
+        if ($this->job_mananger_provider::matterhorn_service_available()) {
             $this->load_media_package();
             $this->load_opencast_job_id();
         }
@@ -182,15 +199,16 @@ class OCJob
     /**
      * Uploads a chunk to opencast
      *
-     * @param $chunk_name (like 'chunk_1')
+     * @param                             $chunk_name (like 'chunk_1')
+     * @param FileSystemProviderInterface $file_system
      */
-    public function upload_opencast($chunk_name)
+    public function upload_opencast($chunk_name, FileSystemProviderInterface $file_system)
     {
         $this->upload_chunk_info->load();
         $this->upload_chunk_info->content[$chunk_name]['upload_tries'] += 1;
         $this->upload_chunk_info->save();
 
-        if (OCJobManager::matterhorn_service_available()) {
+        if ($this->job_mananger_provider::matterhorn_service_available()) {
             $this->wait_for_previous_upload(5, 500);
             $chunk_number = $this->upload_chunk_info[$chunk_name]['number'];
 
@@ -198,7 +216,7 @@ class OCJob
                 $this->opencast_info['opencast_job_id'],
                 $chunk_number,
                 [
-                    'name'     => OCJobManager::chunk_path($this->id, $chunk_number),
+                    'name'     => $this->job_mananger_provider::chunk_path($this->id, $chunk_number),
                     'mime'     => $this->data['file']['type'],
                     'postname' => $this->data['file']['name']
                 ]
@@ -209,30 +227,30 @@ class OCJob
                 $this->upload_chunk_info[$chunk_name]['upload_success'] = true;
                 $this->upload_chunk_info->save();
                 $this->upload_chunk_info->load();
-                $this->upload_chunk_info[$chunk_name]['removed'] = unlink(OCJobManager::chunk_path($this->id, $chunk_number));
+                $this->upload_chunk_info[$chunk_name]['removed'] = $file_system->unlink($this->job_mananger_provider::chunk_path($this->id, $chunk_number));
                 $this->upload_chunk_info->save();
             }
         }
     }
 
-    private function wait_for_previous_upload($max_time_s, $sleep_time_ms)
+    private function wait_for_previous_upload($max_time_s, $sleep_time_ms, SleepProviderInterface $sleep_provider)
     {
         $sleep_time = 0;
-        if (OCJobManager::matterhorn_service_available()) {
+        if ($this->job_mananger_provider::matterhorn_service_available()) {
             while ($sleep_time < ($max_time_s * 1000000) && $this->upload_client->isInProgress($this->opencast_info['opencast_job_id'])) {
                 $sleep_time += $sleep_time_ms;
-                usleep($sleep_time_ms);
+                $sleep_provider->usleep($sleep_time_ms);
             }
         }
     }
 
-    private function wait_for_completeness($max_time_s, $sleep_time_ms)
+    private function wait_for_completeness($max_time_s, $sleep_time_ms, SleepProviderInterface $sleep_provider)
     {
         $sleep_time = 0;
-        if (OCJobManager::matterhorn_service_available()) {
+        if ($this->job_mananger_provider::matterhorn_service_available()) {
             while ($sleep_time < ($max_time_s * 1000000) && !$this->upload_client->isComplete($this->opencast_info['opencast_job_id'])) {
                 $sleep_time += $sleep_time_ms;
-                usleep($sleep_time_ms);
+                $sleep_provider->usleep($sleep_time_ms);
             }
         }
     }
@@ -242,9 +260,9 @@ class OCJob
      */
     public function finish_upload()
     {
-        if (OCJobManager::matterhorn_service_available()) {
+        if ($this->job_mananger_provider::matterhorn_service_available()) {
             if ($this->both_uploads_succeeded()) {
-                $this->wait_for_completeness(5, 500);
+                $this->wait_for_completeness(5, 500, new SleepProviderStandard());
                 $result = [
                     'track'   => $this->add_track_to_media_package(),
                     'series'  => $this->add_series_dcs_to_media_package(),
@@ -418,7 +436,8 @@ class OCJob
 
         $this->upload_local(
             $source,
-            $chunk_number
+            $chunk_number,
+            new FileSystemProviderStandard()
         );
     }
 }
