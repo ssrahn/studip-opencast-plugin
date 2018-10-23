@@ -66,9 +66,7 @@ class UploadClient extends OCRestClient
 
         $response = $this->ochandler->execute();
         $httpCode = $this->ochandler->last_request_http_code();
-        $res = [];
-        $res[] = $httpCode;
-        $res[] = $response;
+        $res = [$httpCode, $response];
         if ($httpCode == 200 && isset($response)) {
             return $res;
         } else {
@@ -116,10 +114,10 @@ class UploadClient extends OCRestClient
     function isLastChunk($jobID)
     {
         $state = $this->getState($jobID);
-        $ch = 'chunks-total';
-        $ch2 = 'current-chunk';
-        $numChunks = $state->uploadjob->$ch;
-        $curChunk = $state->uploadjob->$ch2->number + 1;
+        $total = 'chunks-total';
+        $current = 'current-chunk';
+        $numChunks = $state->uploadjob->$total;
+        $curChunk = $state->uploadjob->$current->number + 1;
 
         return ($numChunks == $curChunk);
     }
@@ -129,10 +127,5 @@ class UploadClient extends OCRestClient
         $state = $this->getState($jobID);
 
         return $state->uploadjob->payload->mediapackage->media->track->url;
-    }
-
-    function addTrack($mediapackage, $flavor)
-    {
-        return true;
     }
 }
