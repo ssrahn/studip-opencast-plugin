@@ -54,8 +54,6 @@ class SearchClient extends OCRestClient
 
         $service_url = "/series.json?id=".$series_id."&episodes=true&series=true";
         if($search = $this->getJSON($service_url)){
-            //$x = "search-results";
-            //$episodes = $search->$x->result;
             return $search;
         } else return false;
     }
@@ -71,8 +69,6 @@ class SearchClient extends OCRestClient
 
         $service_url = "/series.json";
         if($series = $this->getJSON($service_url)){
-            //$x = "search-results";
-            //$episodes = $search->$x->result;
             return $series;
         } else return false;
     }
