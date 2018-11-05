@@ -16,6 +16,11 @@ class OCJob
     private $json_file_provider;
     private $job_mananger_provider;
     private $time_provider;
+    private $oc_model_provider;
+    private $oc_course_model_provider;
+    private $series_model_provider;
+    private $file_system_provider;
+    private $sleep_provider;
 
     private $ingest_client;
     private $upload_client;
@@ -25,13 +30,23 @@ class OCJob
         RestClientProviderInterface $rest_client_provider,
         JsonFileProviderInterface $json_file_provider,
         JobManagerProviderInterface $job_manager_provider,
-        TimeProviderInterface $time_provider
+        TimeProviderInterface $time_provider,
+        OCModelProviderInterface $oc_model_provider,
+        OCCourseModelProviderInterface $oc_course_model_provider,
+        FileSystemProviderInterface $file_system_provider,
+        SleepProviderInterface $sleep_provider,
+        OCSeriesModelProviderInterface $series_model_provider
     )
     {
         $this->rest_client_provider = $rest_client_provider;
         $this->json_file_provider = $json_file_provider;
         $this->job_mananger_provider = $job_manager_provider;
         $this->time_provider = $time_provider;
+        $this->oc_model_provider = $oc_model_provider;
+        $this->oc_course_model_provider = $oc_course_model_provider;
+        $this->file_system_provider = $file_system_provider;
+        $this->sleep_provider = $sleep_provider;
+        $this->series_model_provider = $series_model_provider;
 
         $this->id = $id;
         $this->load_job_data();
@@ -90,9 +105,9 @@ class OCJob
      * @param                             $chunk_number int the number for this chunk
      * @param FileSystemProviderInterface $file_system
      */
-    public function upload_local($tmp_path, $chunk_number, FileSystemProviderInterface $file_system)
+    public function upload_local($tmp_path, $chunk_number)
     {
-        if ($file_system->move_uploaded_file($tmp_path, $this->job_mananger_provider::chunk_path($this->id, $chunk_number))) {
+        if ($this->file_system_provider->move_uploaded_file($tmp_path, $this->job_mananger_provider::chunk_path($this->id, $chunk_number))) {
             $this->local_chunk_info['chunk_' . $chunk_number] = [
                 'number'            => $chunk_number,
                 'local_upload_time' => $this->time_provider->time()
@@ -200,9 +215,9 @@ class OCJob
      * Uploads a chunk to opencast
      *
      * @param                             $chunk_name (like 'chunk_1')
-     * @param FileSystemProviderInterface $file_system
+     * @param SleepProviderInterface      $sleep_provider
      */
-    public function upload_opencast($chunk_name, FileSystemProviderInterface $file_system)
+    public function upload_opencast($chunk_name)
     {
         $this->upload_chunk_info->load();
         $this->upload_chunk_info->content[$chunk_name]['upload_tries'] += 1;
@@ -227,30 +242,30 @@ class OCJob
                 $this->upload_chunk_info[$chunk_name]['upload_success'] = true;
                 $this->upload_chunk_info->save();
                 $this->upload_chunk_info->load();
-                $this->upload_chunk_info[$chunk_name]['removed'] = $file_system->unlink($this->job_mananger_provider::chunk_path($this->id, $chunk_number));
+                $this->upload_chunk_info[$chunk_name]['removed'] = $this->file_system_provider->unlink($this->job_mananger_provider::chunk_path($this->id, $chunk_number));
                 $this->upload_chunk_info->save();
             }
         }
     }
 
-    private function wait_for_previous_upload($max_time_s, $sleep_time_ms, SleepProviderInterface $sleep_provider)
+    private function wait_for_previous_upload($max_time_s, $sleep_time_ms)
     {
         $sleep_time = 0;
         if ($this->job_mananger_provider::matterhorn_service_available()) {
             while ($sleep_time < ($max_time_s * 1000000) && $this->upload_client->isInProgress($this->opencast_info['opencast_job_id'])) {
                 $sleep_time += $sleep_time_ms;
-                $sleep_provider->usleep($sleep_time_ms);
+                $this->sleep_provider->usleep($sleep_time_ms);
             }
         }
     }
 
-    private function wait_for_completeness($max_time_s, $sleep_time_ms, SleepProviderInterface $sleep_provider)
+    private function wait_for_completeness($max_time_s, $sleep_time_ms)
     {
         $sleep_time = 0;
         if ($this->job_mananger_provider::matterhorn_service_available()) {
             while ($sleep_time < ($max_time_s * 1000000) && !$this->upload_client->isComplete($this->opencast_info['opencast_job_id'])) {
                 $sleep_time += $sleep_time_ms;
-                $sleep_provider->usleep($sleep_time_ms);
+                $this->sleep_provider->usleep($sleep_time_ms);
             }
         }
     }
@@ -262,7 +277,7 @@ class OCJob
     {
         if ($this->job_mananger_provider::matterhorn_service_available()) {
             if ($this->both_uploads_succeeded()) {
-                $this->wait_for_completeness(5, 500, new SleepProviderStandard());
+                $this->wait_for_completeness(5, 500);
                 $result = [
                     'track'   => $this->add_track_to_media_package(),
                     'series'  => $this->add_series_dcs_to_media_package(),
@@ -293,7 +308,7 @@ class OCJob
 
     private function add_series_dcs_to_media_package()
     {
-        $series_dcs = OCSeriesModel::getSeriesDCs($this->data['id_list']['course']);
+        $series_dcs = $this->series_model_provider::getSeriesDCs($this->data['id_list']['course']);
         $result = [];
         if (is_array($series_dcs)) {
             foreach ($series_dcs as $dc) {
@@ -335,7 +350,7 @@ class OCJob
     {
         $info = $this->data['info'];
         $ids = $this->data['id_list'];
-        $creatition_time = new DateTime($info['record_date'] . ' ' . $info['start']['h'] . ':' . $info['start']['h']);
+        $creatition_time = $this->time_provider->getDateTime($info['record_date'] . ' ' . $info['start']['h'] . ':' . $info['start']['h']);
         $dc_values = [];
 
         $dc_values['title'] = $info['title'];
@@ -350,7 +365,7 @@ class OCJob
                                 <dcterms:creator><![CDATA[' . $dc_values['creator'] . ']]></dcterms:creator>
                                 <dcterms:contributor><![CDATA[' . $dc_values['contributor'] . ']]></dcterms:contributor>
                                 <dcterms:subject><![CDATA[' . $dc_values['subject'] . ']]></dcterms:subject>
-                                <dcterms:created xsi:type="dcterms:W3CDTF">' . OCModel::getDCTime($creatition_time->getTimestamp()) . '</dcterms:created>
+                                <dcterms:created xsi:type="dcterms:W3CDTF">' . $this->oc_model_provider::getDCTime($creatition_time->getTimestamp()) . '</dcterms:created>
                                 <dcterms:description><![CDATA[' . $dc_values['description'] . ']]></dcterms:description>
                                 <dcterms:language><![CDATA[' . $dc_values['language'] . ']]></dcterms:language>
                                 <dcterms:title><![CDATA[' . $dc_values['title'] . ']]></dcterms:title>
@@ -366,7 +381,7 @@ class OCJob
     public function trigger_ingest()
     {
         if ($this->both_uploads_succeeded()) {
-            $occourse = new OCCourseModel($this->data['id_list']['course']);
+            $occourse = $this->oc_course_model_provider->create($this->data['id_list']['course']);
             $uploadwf = $occourse->getWorkflow('upload');
             if ($uploadwf) {
                 $workflow = $uploadwf['workflow_id'];
@@ -381,7 +396,7 @@ class OCJob
                 $json = json_encode($simplexml);
                 $x = json_decode($json, true);
                 $result = $x['@attributes'];
-                OCModel::setWorkflowIDforCourse($result['id'], $this->data['id_list']['course'], $GLOBALS['auth']->auth['uid'], time());
+                $this->oc_model_provider::setWorkflowIDforCourse($result['id'], $this->data['id_list']['course'], $GLOBALS['auth']->auth['uid'], time());
                 $this->opencast_info['ingest'] = $result;
             }
         }
@@ -397,19 +412,22 @@ class OCJob
 
     /**
      * Clear all the files and directories belonging to this job
+     *
      */
     public function clear_files()
     {
-        $path = OCJobManager::job_path($this->id);
-        $files = array_diff(scandir($path), ['..', '.']);
+        $path = $this->job_mananger_provider::job_path($this->id);
+        $files = array_diff($this->file_system_provider->scandir($path), ['..', '.']);
         foreach ($files as $file) {
-            unlink($path . '/' . $file);
+            $this->file_system_provider->unlink($path . '/' . $file);
         }
-        rmdir($path);
+        $this->file_system_provider->rmdir($path);
     }
 
     /**
      * Trys the upload of missing chunks to opencast
+     *
+     * @param FileSystemProviderInterface $file_system
      */
     public function try_upload_to_opencast()
     {
@@ -426,18 +444,19 @@ class OCJob
 
     /**
      * Just usable from the 'upload.php' controller
+     *
+     * @param FileSystemProviderInterface $file_system
      */
     public function upload_local_from_controller()
     {
         $source = $_FILES['video']['tmp_name'];
-        $chunk_number = OCJobManager::calculate_chunk_number_from_range((
+        $chunk_number = $this->job_mananger_provider::calculate_chunk_number_from_range((
         isset($_SERVER['HTTP_CONTENT_RANGE']) ? $_SERVER['HTTP_CONTENT_RANGE'] : 0
         ));
 
         $this->upload_local(
             $source,
-            $chunk_number,
-            new FileSystemProviderStandard()
+            $chunk_number
         );
     }
 }

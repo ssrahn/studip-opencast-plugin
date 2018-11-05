@@ -8,4 +8,5 @@
 interface TimeProviderInterface
 {
     public function time();
+    public function getDateTime($time='now');
 }

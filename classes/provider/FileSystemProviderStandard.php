@@ -17,4 +17,14 @@ class FileSystemProviderStandard implements FileSystemProviderInterface
     {
         return unlink($chunk_path);
     }
+
+    public function scandir($path)
+    {
+        return scandir($path);
+    }
+
+    public function rmdir($path)
+    {
+        return rmdir($path);
+    }
 }

@@ -146,7 +146,15 @@ class OCJobManager
             );
         }
 
-        return new OCJob($job_id);
+        return new OCJob($job_id,new RestClientProviderStandard(),
+            new JsonFileProviderStandard(),
+            new JobManagerProviderStandard(),
+            new TimeProviderStandard(),
+            new OCModelProviderStandard(),
+            new OCCourseModelProviderStandard(),
+            new FileSystemProviderStandard(),
+            new SleepProviderStandard(),
+            new OCSeriesModelProviderStandard());
     }
 
     /**
@@ -156,7 +164,15 @@ class OCJobManager
     {
         $job_ids = static::existent_jobs();
         foreach ($job_ids as $job_id) {
-            $job = new OCJob($job_id);
+            $job = new OCJob($job_id,new RestClientProviderStandard(),
+                new JsonFileProviderStandard(),
+                new JobManagerProviderStandard(),
+                new TimeProviderStandard(),
+                new OCModelProviderStandard(),
+                new OCCourseModelProviderStandard(),
+                new FileSystemProviderStandard(),
+                new SleepProviderStandard(),
+                new OCSeriesModelProviderStandard());
             $minimum_success_time = time() - static::$CACHE_SUCCESS;
             $minimum_failure_time = time() - static::$CACHE_FAILURE;
             if (($job->both_uploads_succeeded() && $job->created_at_time() < $minimum_success_time) ||
@@ -195,7 +211,15 @@ class OCJobManager
     {
         $job_ids = static::existent_jobs();
         foreach ($job_ids as $job_id) {
-            $job = new OCJob($job_id);
+            $job = new OCJob($job_id,new RestClientProviderStandard(),
+                new JsonFileProviderStandard(),
+                new JobManagerProviderStandard(),
+                new TimeProviderStandard(),
+                new OCModelProviderStandard(),
+                new OCCourseModelProviderStandard(),
+                new FileSystemProviderStandard(),
+                new SleepProviderStandard(),
+                new OCSeriesModelProviderStandard());
             echo "Versuche Upload von '" . $job_id . "'...";
             $job->try_upload_to_opencast();
             echo "Beende Upload von '" . $job_id . "'...";

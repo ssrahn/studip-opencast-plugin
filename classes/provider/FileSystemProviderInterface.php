@@ -10,4 +10,8 @@ interface FileSystemProviderInterface
     public function move_uploaded_file(string $tmp_path, string $chunk_path);
 
     public function unlink(string $chunk_path);
+
+    public function scandir($path);
+
+    public function rmdir($path);
 }

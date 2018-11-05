@@ -12,4 +12,9 @@ class TimeProviderStandard implements TimeProviderInterface
     {
         return time();
     }
+
+    public function getDateTime($time='now')
+    {
+        return new DateTime($time);
+    }
 }
