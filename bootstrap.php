@@ -32,12 +32,11 @@ require_once 'classes/OCRestClient/ServicesClient.php';
 require_once 'classes/OCRestClient/UploadClient.php';
 require_once 'classes/OCRestClient/WorkflowClient.php';
 
-require_once 'classes/provider/JobManagerProviderInterface.php';
-require_once 'classes/provider/JobManagerProviderStandard.php';
-require_once 'classes/provider/JsonFileProviderInterface.php';
-require_once 'classes/provider/JsonFileProviderStandard.php';
-require_once 'classes/provider/RestClientProviderInterface.php';
-require_once 'classes/provider/RestClientProviderStandard.php';
+foreach (scandir(__DIR__ . '/classes/provider') as $file) {
+    if ($file[0] != '.') {
+        require_once __DIR__ . '/classes/provider/' . $file;
+    }
+}
 
 /* cronjobs */
 require_once 'lib/classes/CronJob.class.php';
