@@ -1,5 +1,7 @@
 <?php
 
+namespace Opencast\Models;
+
 use Opencast\Models\OCSeminarWorkflowConfiguration;
 use Opencast\Models\OCSeminarSeries;
 

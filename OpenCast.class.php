@@ -9,6 +9,7 @@ use Opencast\LTI\OpencastLTI;
 require __DIR__.'/composer_modules/autoload.php';
 
 use Opencast\Models\OCModel;
+use Opencast\Models\OCCourseModel;
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 
