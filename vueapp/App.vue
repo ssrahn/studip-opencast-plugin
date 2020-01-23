@@ -19,9 +19,17 @@ export default {
     components: {
         Error
     },
-    beforeRouteEnter(to, from, next) {
-        router.push('admin');
-        next();
+    mounted() {
+        let url  = new URL(window.location);
+        let page = url.toString().substr(url.toString().lastIndexOf("/") + 1)
+
+        if (page == 'admin') {
+            this.$router.push('admin');
+        } else {
+            this.$router.push('home');
+        }
+
     }
+
 };
 </script>

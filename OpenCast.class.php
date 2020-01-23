@@ -5,7 +5,7 @@
 
 use Opencast\LTI\OpencastLTI;
 
-include('bootstrap.php');
+#include('bootstrap.php');
 
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
