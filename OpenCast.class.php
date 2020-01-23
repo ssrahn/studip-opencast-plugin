@@ -10,6 +10,9 @@ include('bootstrap.php');
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 
+use Opencast\AppFactory;
+use Opencast\RouteMap;
+
 NotificationCenter::addObserver('OpenCast', 'handleChangedSchedule',  'CourseDidChangeSchedule');
 
 class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
@@ -89,6 +92,33 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $GLOBALS['opencast_already_loaded'] = true;
+
+        require __DIR__.'/composer_modules/autoload.php';
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @SuppressWarnings(UnusedFormalParameter)
+     */
+    public function perform($unconsumedPath)
+    {
+        if (substr($unconsumedPath, 0, 3) == 'api') {
+            $appFactory = new AppFactory();
+            $app = $appFactory->makeApp($this);
+            $app->group('/opencast/api', new RouteMap($app));
+            $app->run();
+        } else {
+            PageLayout::addScript($this->getPluginUrl() . '/static/bundle.js');
+            PageLayout::addScript($this->getPluginUrl() . '/static/styles.css');
+
+            $trails_root        = $this->getPluginPath() . '/app';
+            $dispatcher         = new Trails_Dispatcher($trails_root,
+                rtrim(PluginEngine::getURL($this, null, ''), '/'),
+                'index');
+            $dispatcher->current_plugin = $this;
+            $dispatcher->dispatch($unconsumed_path);
+        }
     }
 
     /**
