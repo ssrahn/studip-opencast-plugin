@@ -18,6 +18,10 @@ export default {
     name: "App",
     components: {
         Error
+    },
+    beforeRouteEnter(to, from, next) {
+        router.push('admin');
+        next();
     }
 };
 </script>

@@ -34,32 +34,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
         if ($perm->have_perm('root')) {
 
-            //check if we already have an connection to an opencast matterhorn
-            //.. now the subnavi
-            $main = new Navigation($this->_("Opencast Administration"));
+            $main = new Navigation($this->_("Opencast"));
             // TODO think about an index page.. for the moment the config page is in charge..
-            $main->setURL(PluginEngine::getURL('opencast/admin/config'));
-
-            $config = new Navigation($this->_('Opencast Einstellungen'));
-            $config->setURL(PluginEngine::getURL('opencast/admin/config'));
-            $main->addSubNavigation('oc-config', $config);
+            $main->setURL(PluginEngine::getURL('opencast/admin'));
 
             Navigation::addItem('/start/opencast', $main);
-            Navigation::addItem('/admin/config/oc-config', $config);
-
-            if (OCModel::getConfigurationstate()) {
-                $resources = new Navigation($this->_('Opencast Ressourcen'));
-                $resources->setURL(PluginEngine::getURL('opencast/admin/resources'));
-                $main->addSubNavigation('oc-resources', $resources);
-                Navigation::addItem('/admin/config/oc-resources', $resources);
-
-                if ($perm->have_perm('root')) {
-                    $mediastatus = new Navigation($this->_('Opencast Medienstatus'));
-                    $mediastatus->setURL(PluginEngine::getURL('opencast/admin/mediastatus'));
-                    $main->addSubNavigation('oc-mediastatus', $mediastatus);
-                    Navigation::addItem('/admin/config/oc-mediastatus', $mediastatus);
-                }
-            }
+            Navigation::addItem('/admin/config/oc-config', $main);
         }
 
 
@@ -117,7 +97,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
                 rtrim(PluginEngine::getURL($this, null, ''), '/'),
                 'index');
             $dispatcher->current_plugin = $this;
-            $dispatcher->dispatch($unconsumed_path);
+            $dispatcher->dispatch($unconsumedPath);
         }
     }
 

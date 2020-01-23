@@ -8,8 +8,13 @@ export default new Router({
     routes: [
         {
             name: "home",
-            path: "/",
+            path: "/home",
             component: () => import("@/views/Home")
-        }
+        },
+        {
+            name: "admin",
+            path: "/",
+            component: () => import("@/views/Admin")
+        },
     ]
 });

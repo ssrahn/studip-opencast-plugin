@@ -4,6 +4,7 @@ import App from './App.vue';
 import $ from 'jquery';
 import router from "./router";
 import store from "./store";
+import "./public-path";
 
 import { CHECK_AUTH, LOGOUT, ERROR_COMMIT } from "./store/actions.type";
 import ApiService from "./common/api.service";
@@ -25,7 +26,6 @@ Vue.axios.interceptors.response.use((response) => { // intercept the global erro
         return Promise.reject(error)
     }
 );
-
 
 $(function() {
     window.Vue = new Vue({
