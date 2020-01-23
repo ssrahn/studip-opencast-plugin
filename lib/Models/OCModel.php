@@ -1,9 +1,13 @@
 <?php
 
+namespace Opencast\Models;
+
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\Models\OCSeminarEpisodes;
 use OpenCast\Models\OCScheduledRecordings;
+use \DBManager;
+use \PDO;
 
 use Opencast\LTI\OpencastLTI;
 

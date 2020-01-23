@@ -6,7 +6,9 @@
 use Opencast\LTI\OpencastLTI;
 
 #include('bootstrap.php');
+require __DIR__.'/composer_modules/autoload.php';
 
+use Opencast\Models\OCModel;
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 
@@ -72,8 +74,6 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $GLOBALS['opencast_already_loaded'] = true;
-
-        require __DIR__.'/composer_modules/autoload.php';
     }
 
     /**
