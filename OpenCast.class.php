@@ -2,17 +2,16 @@
 /*
  * OpenCast.class.php - A course plugin for Stud.IP which includes an opencast player
  */
-
-use Opencast\LTI\OpencastLTI;
-
 include('bootstrap.php');
 
+use Opencast\LTI\OpencastLTI;
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 
 NotificationCenter::addObserver('OpenCast', 'handleChangedSchedule',  'CourseDidChangeSchedule');
+NotificationCenter::addObserver('Opencast', 'addBlocks',              'CoursewareRegisterBlocks');
 
-class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
+class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin//BlockProvider
 {
     const GETTEXT_DOMAIN = 'opencast';
 
@@ -89,6 +88,11 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
         }
 
         $GLOBALS['opencast_already_loaded'] = true;
+    }
+
+    public static function addBlocks($course_id)
+    {
+        Courseware::addBlockPath(__DIR__ . '/blocks');
     }
 
     /**
