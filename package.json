@@ -4,8 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "webpack-dev": "webpack --watch --mode=\"development\"",
-        "webpack": "webpack --mode=\"production\""
+        "build:dev": "webpack --watch --mode=\"development\"",
+        "build:prod": "webpack --mode=\"production\""
     },
     "author": "Till Glöggler (tgloeggl@uos.de)",
     "dependencies": {

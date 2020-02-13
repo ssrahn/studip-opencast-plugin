@@ -20,7 +20,7 @@ require_once 'models/OCAccessControl.php';
 require_once 'controllers/opencast_controller.php';
 
 // StudipAutoloader::addAutoloadPath(__DIR__ . '/classes');
-StudipAutoloader::addAutoloadPath(__DIR__ . '/models', 'Opencast\\Models');
+StudipAutoloader::addAutoloadPath(__DIR__ . '/app/models', 'Opencast\\Models');
 
 require_once 'models/OCModel.php';
 require_once 'models/OCCourseModel.class.php';

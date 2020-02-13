@@ -21,7 +21,7 @@ export default {
     },
     mounted() {
         let url  = new URL(window.location);
-        let page = url.toString().substr(url.toString().lastIndexOf("/") + 1)
+        let page = url.pathname.substr(url.pathname.lastIndexOf("/") + 1);
 
         if (page == 'admin') {
             this.$router.push('admin');
