@@ -1,10 +1,7 @@
-import block_types from 'js/block_types'
-import StudentView from './student_view'
-import AuthorView from './author_view'
+import StudentView from './student_view.js'
+import AuthorView from './author_view.js'
 
-import '../css/opencast_block.less'
-
-export default block_types.add({
+export default courseware.block_types.add({
   name: 'OpenCastBlock',
 
   content_block: true,

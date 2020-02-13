@@ -1,16 +1,12 @@
-import $ from 'jquery'
-import StudentView from 'js/student_view'
-import helper from 'js/url'
+export default courseware.StudentView.extend({
+    events: {
+    },
 
-export default StudentView.extend({
-  events: {
-  },
+    initialize() { },
 
-  initialize() { },
-
-  render() {
-    return this;
-  },
+    render() {
+        return this;
+    },
 
   postRender() {
     try {

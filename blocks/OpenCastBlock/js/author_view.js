@@ -1,9 +1,4 @@
-import $ from 'jquery'
-import Backbone from 'backbone'
-import AuthorView from 'js/author_view'
-import helper from 'js/url'
-
-export default AuthorView.extend({
+export default courseware.AuthorView.extend({
 
     events: {
         'click button[name=save]':   'onSave',
@@ -11,8 +6,8 @@ export default AuthorView.extend({
     },
 
     initialize() {
-        Backbone.on('beforemodeswitch', this.onModeSwitch, this);
-        Backbone.on('beforenavigate', this.onNavigate, this);
+        courseware.Backbone.on('beforemodeswitch', this.onModeSwitch, this);
+        courseware.Backbone.on('beforenavigate', this.onNavigate, this);
     },
 
     render() {
@@ -50,7 +45,7 @@ export default AuthorView.extend({
             return;
         }
         event.isUserInputHandled = true;
-        Backbone.trigger('preventnavigateto', !confirm('Es gibt nicht gespeicherte Änderungen. Möchten Sie die Seite trotzdem verlassen?'));
+        courseware.Backbone.trigger('preventnavigateto', !confirm('Es gibt nicht gespeicherte Änderungen. Möchten Sie die Seite trotzdem verlassen?'));
     },
 
     onModeSwitch(toView, event) {
@@ -66,7 +61,7 @@ export default AuthorView.extend({
             return;
         }
         event.isUserInputHandled = true;
-        Backbone.trigger('preventviewswitch', !confirm('Es gibt nicht gespeicherte Änderungen. Möchten Sie trotzdem fortfahren?'));
+        courseware.Backbone.trigger('preventviewswitch', !confirm('Es gibt nicht gespeicherte Änderungen. Möchten Sie trotzdem fortfahren?'));
     },
 
     onSave(event) {
@@ -89,7 +84,7 @@ export default AuthorView.extend({
                 break;
         }
         $opencast_content = JSON.stringify($opencast_content);
-        helper
+        courseware.helper
         .callHandler(this.model.id, 'save', {
               opencast_content : $opencast_content
         })

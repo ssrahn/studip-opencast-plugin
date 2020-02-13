@@ -92,7 +92,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin//Blo
 
     public static function addBlocks($course_id)
     {
-        Courseware::addBlockPath(__DIR__ . '/blocks');
+        Courseware::addBlock('OpenCast', 'blocks/OpenCastBlock');
     }
 
     /**

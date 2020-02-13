@@ -1,0 +1,18 @@
+.OpenCastBlock iframe
+{
+        border: solid thin #ccc;
+}
+
+.OpenCastBlock .cw-opencast-useocplayer-wrapper
+{
+    width: 40em;
+    height: unset;
+    padding: 0.5em 0;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.OpenCastBlock .cw-opencast-useocplayer-wrapper span.bold
+{
+    font-weight: 600;
+}
