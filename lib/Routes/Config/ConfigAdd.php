@@ -1,29 +1,28 @@
 <?php
 
-namespace Backend\Routes\Config;
+namespace Opencast\Routes\Config;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Backend\Errors\AuthorizationFailedException;
-use Backend\BackendTrait;
-use Backend\BackendController;
-use Backend\Models\Config;
+use Opencast\Errors\AuthorizationFailedException;
+use Opencast\OpencastTrait;
+use Opencast\OpencastController;
+use Opencast\Models\Config;
 
-class ConfigAdd extends BackendController
+class ConfigAdd extends OpencastController
 {
-    use BackendTrait;
+    use OpencastTrait;
 
     public function __invoke(Request $request, Response $response, $args)
     {
+        \SimpleOrMap::expireTableScheme();
         $json = $this->getRequestData($request);
 
         $config = new Config;
 
-        foreach ($json['config'] as $attr => $val) {
-            $config->$attr = $val;
-        }
+        $config->config = json_encode($json['config']);
 
-        $config->save();
+        $config->store();
 
         return $this->createResponse(['config' => $config], $response);
     }

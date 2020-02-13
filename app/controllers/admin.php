@@ -1,5 +1,7 @@
 <?php
 
+use Opencast\Models\OCConfig;
+
 class AdminController extends Opencast\Controller
 {
     /**
@@ -14,21 +16,20 @@ class AdminController extends Opencast\Controller
         parent::__construct($dispatcher);
 
         $this->plugin = $dispatcher->current_plugin;
+    }
 
-        // Localization
-        $this->_ = function ($string) use ($dispatcher) {
-            return call_user_func_array(
-                [$dispatcher->current_plugin, '_'],
-                func_get_args()
-            );
-        };
+    function before_filter(&$action, &$args)
+    {
+        if (!$GLOBALS['perm']->have_perm('root')) {
+            throw new AccessDeniedException();
+        }
 
-        $this->_n = function ($string0, $tring1, $n) use ($dispatcher) {
-            return call_user_func_array(
-                [$dispatcher->current_plugin, '_n'],
-                func_get_args()
-            );
-        };
+        // notify on trails action
+        $klass = substr(get_called_class(), 0, -10);
+        $name = sprintf('oc_admin.performed.%s_%s', $klass, $action);
+        NotificationCenter::postNotification($name, $this);
+
+        parent::before_filter($action, $args);
     }
 
     public function index_action()

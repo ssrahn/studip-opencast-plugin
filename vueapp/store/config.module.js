@@ -18,7 +18,14 @@ import {
 
 const initialState = {
     config_list: [],
-    config: {}
+    config: {
+        'id'  :      null,
+        'url' :      null,
+        'user':      null,
+        'password':  null,
+        'ltikey':    null,
+        'ltisecret': null
+    }
 };
 
 const getters = {

@@ -1,17 +1,17 @@
 <?php
 
-namespace Backend\Routes\Config;
+namespace Opencast\Routes\Config;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Backend\Errors\AuthorizationFailedException;
-use Backend\BackendTrait;
-use Backend\BackendController;
-use Backend\Models\Config;
+use Opencast\Errors\AuthorizationFailedException;
+use Opencast\OpencastTrait;
+use Opencast\OpencastController;
+use Opencast\Models\Config;
 
-class ConfigEdit extends BackendController
+class ConfigEdit extends OpencastController
 {
-    use BackendTrait;
+    use OpencastTrait;
 
     public function __invoke(Request $request, Response $response, $args)
     {

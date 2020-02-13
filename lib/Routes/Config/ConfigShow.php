@@ -1,25 +1,25 @@
 <?php
 
-namespace Backend\Routes\Config;
+namespace Opencast\Routes\Config;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Backend\Errors\AuthorizationFailedException;
-use Backend\Errors\Error;
-use Backend\BackendTrait;
-use Backend\BackendController;
-use Backend\Models\Config;
+use Opencast\Errors\AuthorizationFailedException;
+use Opencast\Errors\Error;
+use Opencast\OpencastTrait;
+use Opencast\OpencastController;
+use Opencast\Models\Config;
 
-class ConfigShow extends BackendController
+class ConfigShow extends OpencastController
 {
-    use BackendTrait;
+    use OpencastTrait;
 
     public function __invoke(Request $request, Response $response, $args)
     {
-        $config = Config::where('id', $args['id'])->first();
+        $config = Config::find($args['id']);
 
         if ($config) {
-            return $this->createResponse(['config' => $config->toArray()], $response);
+            return $this->createResponse(json_decode($config->config), $response);
         }
 
         throw new Error('Config not found', 404);

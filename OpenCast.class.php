@@ -5,7 +5,6 @@
 
 use Opencast\LTI\OpencastLTI;
 
-#include('bootstrap.php');
 require __DIR__.'/composer_modules/autoload.php';
 
 use Opencast\Models\OCModel;

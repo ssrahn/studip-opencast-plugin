@@ -3,5 +3,5 @@
 </div>
 
 <script type="text/javascript">
-    let API_URL = '<?= PluginEngine::getURL('OpenCast', [], 'api') ?>';
+    let API_URL = '<?= PluginEngine::getURL('opencast', [], 'api') ?>';
 </script>
