@@ -31,6 +31,7 @@ class ConfigAdd extends OpencastController
 
         if (!$config) {
             $config = new Config;
+            $config->id = 1;
         }
 
         $config->config = $json['config'];
@@ -49,7 +50,8 @@ class ConfigAdd extends OpencastController
         // check the selected url for validity
         if (!array_key_exists('scheme', $service_url)) {
             $message = [
-                'error' => sprintf(
+                'type' => 'error',
+                'text' => sprintf(
                     _('Ungültiges URL-Schema: "%s"'),
                     $config->config['url']
                 )
@@ -79,12 +81,13 @@ class ConfigAdd extends OpencastController
             } catch (AccessDeniedException $e) {
                 OCEndpoints::removeEndpoint($config_id, 'services');
 
-                $message = array(
-                    'error' => sprintf(
+                $message = [
+                    'type' => 'error',
+                    'text' => sprintf(
                         $this->_('Fehlerhafte Zugangsdaten für die Opencast Installation mit der URL "%s". Überprüfen Sie bitte die eingebenen Daten.'),
                         $service_host
                     )
-                );
+                ];
 
                 $this->redirect('admin/config');
                 return;
@@ -97,7 +100,8 @@ class ConfigAdd extends OpencastController
                     OCEndpoints::removeEndpoint($config_id, 'services');
 
                     $message = [
-                        'error' => sprintf(
+                        'type' => 'error',
+                        'text' => sprintf(
                             $this->_('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. '
                                 . 'Überprüfen Sie bitte die eingebenen Daten, achten Sie dabei auch auf http vs https und '
                                 . 'ob ihre Opencast-Installation https unterstützt.'),
@@ -119,12 +123,16 @@ class ConfigAdd extends OpencastController
                         $service_host
                     );
 
-                    $message = ['success' => implode('<br>', $success_message)];
+                    $message = [
+                        'type' => 'success',
+                        'text' => implode('<br>', $success_message)
+                    ];
                 }
             } else {
                 OCEndpoints::removeEndpoint($config_id, 'services');
                 $message = [
-                    'error' => sprintf(
+                    'type' => 'error',
+                    'text' => sprintf(
                         _('Es wurden keine Endpoints für die Opencast Installation mit der URL "%s" gefunden. Überprüfen Sie bitte die eingebenen Daten.'),
                         $service_host
                     )

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <form class="default">
+        <form class="default" v-if="config">
             <fieldset>
                 <legend>
                     {{ "Opencast Server Einstellungen" | i18n }}
@@ -85,15 +85,11 @@ export default {
     },
     methods: {
         storeConfig() {
-            console.log('button clicked');
-
             this.message = { type: 'info', text: 'Überprüfe Konfiguration...'};
 
             this.$store.dispatch(CONFIG_CREATE, this.config)
                 .then(({ data }) => {
-                    console.log(data.message);
-                    /*this.message = {
-                        type data.message;*/
+                    this.message = data.message;
                 });
         }
     },

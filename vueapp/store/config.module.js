@@ -68,7 +68,7 @@ export const actions = {
     },
 
     async [CONFIG_CREATE](context, params) {
-        await ApiService.post('config', {
+        return await ApiService.post('config', {
             config: params
         });
     },
