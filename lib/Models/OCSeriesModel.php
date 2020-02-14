@@ -1,8 +1,11 @@
 <?php
 
+namespace Opencast\Models;
+
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\LTI\OpencastLTI;
+use \DBManager;
 
 class OCSeriesModel
 {

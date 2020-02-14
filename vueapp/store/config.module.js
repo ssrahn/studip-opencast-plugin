@@ -19,7 +19,6 @@ import {
 const initialState = {
     config_list: [],
     config: {
-        'id'  :      null,
         'url' :      null,
         'user':      null,
         'password':  null,
@@ -72,7 +71,6 @@ export const actions = {
         await ApiService.post('config', {
             config: params
         });
-        context.commit(CONFIG_SET, {});
     },
 
     [CONFIG_CLEAR](context) {

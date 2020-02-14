@@ -43,11 +43,15 @@
             </fieldset>
 
             <footer>
-                <StudipButton icon="accept"
-                    @click="storeConfig"
-                >Einstellungen überprüfen</StudipButton>
+                <StudipButton icon="accept" @click="storeConfig">
+                    Einstellungen speichern und überprüfen
+                </StudipButton>
             </footer>
         </form>
+
+        <MessageBox v-if="message" :type="message.type">
+            {{ message.text }}
+        </MessageBox>
     </div>
 </template>
 
@@ -55,6 +59,8 @@
 import { mapGetters } from "vuex";
 import store from "@/store";
 import StudipButton from "@/components/StudipButton";
+import MessageBox from "@/components/MessageBox";
+
 import {
     CONFIG_READ, CONFIG_UPDATE,
     CONFIG_CREATE, CONFIG_DELETE
@@ -63,7 +69,13 @@ import {
 export default {
     name: "Home",
     components: {
-        StudipButton
+        StudipButton,
+        MessageBox
+    },
+    data() {
+        return {
+            message: null
+        }
     },
     computed: {
         ...mapGetters(['config'])
@@ -74,9 +86,15 @@ export default {
     methods: {
         storeConfig() {
             console.log('button clicked');
-            this.$store.dispatch(CONFIG_CREATE, {
-                config: this.config
-            });
+
+            this.message = { type: 'info', text: 'Überprüfe Konfiguration...'};
+
+            this.$store.dispatch(CONFIG_CREATE, this.config)
+                .then(({ data }) => {
+                    console.log(data.message);
+                    /*this.message = {
+                        type data.message;*/
+                });
         }
     },
     beforeRouteEnter(to, from, next) {

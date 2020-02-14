@@ -1,13 +1,14 @@
 <?php
 /**
- * OCRestClient.php - The administarion of the opencast player
+ *  Opencast\Models\REST\RestClient.php - The REST Client for Opencast
  */
+namespace Opencast\Models\REST;
 
-use Opencast\Models\OCConfig;
+use Opencast\Models\Config;
 
 define('DEBUG_CURL', FALSE);
 
-class OCRestClient
+class RestClient
 {
     static $me;
 
@@ -30,7 +31,7 @@ class OCRestClient
     {
         // use default config if nothing else is given
         if (is_null($config_id) || $config_id === false) {
-            $config_id = OCConfig::getConfigIdForCourse(Context::getId()) ?: 1;
+            $config_id = Config::getConfigIdForCourse(Context::getId()) ?: 1;
         }
 
         if (!property_exists(get_called_class(), 'me')) {
@@ -50,24 +51,37 @@ class OCRestClient
             $course_id = Context::getId();
         }
 
-        $config_id = OCConfig::getConfigIdForCourse($course_id) ?: 1;
+        $config_id = Config::getConfigIdForCourse($course_id) ?: 1;
 
         return self::getInstance($config_id);
     }
 
-    function __construct($config)
+    function __construct($config_id, $service_type = null)
     {
-        $this->config_id  = $config['config_id'];
-        $this->base_url   = $config['service_url'];
-        $this->username   = $config['service_user'];
-        $this->password   = $config['service_password'];
-        $this->oc_version = $config['service_version'];
+        if ($config = Config::find($config_id)) {
+            $this->config_id  = $config->id;
+            $this->base_url   = $config->config['url'];
+
+            if ($service_type) {
+                if ($endpoint = OCEndpoints::findBySql(
+                    'config_id = ? AND service_type = ?', [$config_id, $service_type]
+                )) {
+                    $this->base_url = $endpoint->service_url;
+                } else {
+                    throw new Exception (_("Konnte keine Konfiguration für den Service $service_type  finden."));
+                }
+            }
+
+            $this->username   = $config->config['user'];
+            $this->password   = $config->config['password'];
+            $this->oc_version = $config->config['version'];
+        } else {
+            throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben."));
+        }
     }
 
     private function initCurl()
     {
-        $precise_config = Configuration::instance($this->config_id);
-
         // setting up a curl-handler
         $this->ochandler = curl_init();
         curl_setopt($this->ochandler, CURLOPT_RETURNTRANSFER, 1);
@@ -80,11 +94,13 @@ class OCRestClient
         curl_setopt($this->ochandler, CURLOPT_FOLLOWLOCATION, 1);
 
         //ssl
-        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, $precise_config['ssl_verify_peer']);
-        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, $precise_config['ssl_verify_host']);
+        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($this->ochandler, CURLOPT_SSL_VERIFYHOST, false);
+        /*
         if ($precise_config['ssl_cipher_list'] != 'none') {
             curl_setopt($this->ochandler, CURLOPT_SSL_CIPHER_LIST, $precise_config['ssl_cipher_list']);
         }
+        */
 
         // debugging
         if (DEBUG_CURL) {
