@@ -12,7 +12,7 @@ class ServicesClient extends RestClient
     {
         $this->serviceName = 'ServicesClient';
 
-        parent::__construct($config_id);
+        parent::__construct($config_id, 'services');
     }
 
     /**

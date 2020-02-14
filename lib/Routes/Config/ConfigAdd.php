@@ -25,19 +25,18 @@ class ConfigAdd extends OpencastController
         \SimpleOrMap::expireTableScheme();
 
         $json = $this->getRequestData($request);
+        $config_id = 1;
 
         // store config in db
-        $config = Config::find(1);
+        $config = Config::find($config_id);
 
         if (!$config) {
             $config = new Config;
-            $config->id = 1;
+            $config->id = $config_id;
         }
 
         $config->config = $json['config'];
         $config->store();
-
-        $config_id = $config->id;
 
         // check Configuration and load endpoints
         $message = null;
@@ -94,7 +93,7 @@ class ConfigAdd extends OpencastController
             }
 
             if ($comp) {
-                $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
+                $services = RESTConfig::retrieveRESTservices($comp, $service_url['scheme']);
 
                 if (empty($services)) {
                     OCEndpoints::removeEndpoint($config_id, 'services');
@@ -111,7 +110,11 @@ class ConfigAdd extends OpencastController
                 } else {
 
                     foreach($services as $service_url => $service_type) {
-                        if (in_array(strtolower($service_type), Opencast\Constants::$SERVICES) !== false) {
+                        if (in_array(
+                                strtolower($service_type),
+                                $this->container['opencast']['services']
+                            ) !== false
+                        ) {
                             OCEndpoints::setEndpoint($config_id, $service_url, $service_type);
                         } else {
                             unset($services[$service_url]);
@@ -119,7 +122,7 @@ class ConfigAdd extends OpencastController
                     }
 
                     $success_message[] = sprintf(
-                        $this->_('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),
+                        _('Die Opencast Installation "%s" wurde erfolgreich konfiguriert.'),
                         $service_host
                     );
 
@@ -129,7 +132,7 @@ class ConfigAdd extends OpencastController
                     ];
                 }
             } else {
-                OCEndpoints::removeEndpoint($config_id, 'services');
+                //OCEndpoints::removeEndpoint($config_id, 'services');
                 $message = [
                     'type' => 'error',
                     'text' => sprintf(

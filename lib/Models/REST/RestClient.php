@@ -5,6 +5,7 @@
 namespace Opencast\Models\REST;
 
 use Opencast\Models\Config;
+use Opencast\Models\OCEndpoints;
 
 define('DEBUG_CURL', FALSE);
 
@@ -66,7 +67,7 @@ class RestClient
                 if ($endpoint = OCEndpoints::findBySql(
                     'config_id = ? AND service_type = ?', [$config_id, $service_type]
                 )) {
-                    $this->base_url = $endpoint->service_url;
+                    $this->base_url = $endpoint[0]->service_url;
                 } else {
                     throw new Exception (_("Konnte keine Konfiguration für den Service $service_type  finden."));
                 }
