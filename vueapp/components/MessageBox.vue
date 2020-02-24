@@ -2,7 +2,7 @@
     <div class="messagebox"
         :class="`messagebox_` + type">
         <div class="messagebox_buttons">
-            <a class="close" href="#" title="Nachrichtenbox schliessen">
+            <a class="close" href="#" title="Nachrichtenbox schliessen" @click.stop="hide">
                 <span>Nachrichtenbox schliessen</span>
             </a>
         </div>
@@ -16,6 +16,11 @@
 <script>
 export default {
     name: "MessageBox",
-    props: ['type']
+    props: ['type'],
+    methods: {
+        hide() {
+            this.$emit('hide');
+        }
+    }
 };
 </script>

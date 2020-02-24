@@ -1,5 +1,6 @@
 <template>
     <div>
+        <OpencastConfigStep :step="1" :steps="5" />
         <form class="default" v-if="config">
             <fieldset>
                 <legend>
@@ -44,7 +45,7 @@
                         :class="{ 'invalid': lti_error }">
                 </label>
 
-                <MessageBox v-if="lti_error" type="error">
+                <MessageBox v-if="lti_error" type="error" @hide="lti_error = false">
                     Überprüfung der LTI Verbindung fehlgeschlagen! <br />
                     Kontrollieren Sie die eingetragenen Daten und stellen Sie
                     sicher, dass Cross-Origin Aufrufe von dieser Domain zur URL
@@ -58,14 +59,15 @@
                 <StudipButton icon="accept" @click="storeConfig">
                     Einstellungen speichern und überprüfen
                 </StudipButton>
+                <StudipButton @click="nextStep">
+                    Weiter zu Schritt 2 >>
+                </StudipButton>
             </footer>
         </form>
 
-        <MessageBox v-if="message" :type="message.type">
+        <MessageBox v-if="message" :type="message.type" @hide="message = ''">
             {{ message.text }}
         </MessageBox>
-
-        <OpencastResources v-if="config.checked" />
     </div>
 </template>
 
@@ -77,7 +79,7 @@ import StudipButton from "@/components/StudipButton";
 import StudipIcon from "@/components/StudipIcon";
 import MessageBox from "@/components/MessageBox";
 
-import OpencastResources from "@/components/OpencastResources";
+import OpencastConfigStep from "@/components/OpencastConfigStep";
 
 import {
     CONFIG_READ, CONFIG_UPDATE,
@@ -89,11 +91,11 @@ import {
 } from "@/store/mutations.type";
 
 export default {
-    name: "Home",
+    name: "AdminBasic",
     components: {
         StudipButton, StudipIcon,
         MessageBox,
-        OpencastResources
+        OpencastConfigStep
     },
     data() {
         return {
@@ -130,14 +132,13 @@ export default {
             }).catch(function (error) {
                 view.lti_error = true;
             });
+        },
+        nextStep() {
+            this.$router.push({ name: 'admin_step2' });
         }
     },
-    beforeRouteEnter(to, from, next) {
-        Promise.all([
-            store.dispatch(CONFIG_READ, 1)
-        ]).then(() => {
-            next();
-        });
+    mounted() {
+        store.dispatch(CONFIG_READ, 1);
     }
 };
 </script>

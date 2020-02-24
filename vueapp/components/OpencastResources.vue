@@ -75,7 +75,7 @@
                 <label>
                     {{ "Standardworkflow für Uploads:" | i18n }}
                     <select name="oc_course_uploadworkflow">
-                            <option v-for="workflow in resources.workflows"
+                            <option v-for="workflow in resources.definitions"
                                 :value="workflow.id"
                                 :title="workflow.description"
                             >

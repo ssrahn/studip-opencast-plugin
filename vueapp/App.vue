@@ -23,12 +23,13 @@ export default {
         let url  = new URL(window.location);
         let page = url.pathname.substr(url.pathname.lastIndexOf("/") + 1);
 
+        console.log('routing...');
         if (page == 'admin') {
-            this.$router.push('admin');
+            console.log('redirecting to admin');
+            this.$router.push({ name: 'admin' });
         } else {
             this.$router.push('home');
         }
-
     }
 
 };
