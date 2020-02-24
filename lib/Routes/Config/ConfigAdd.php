@@ -11,8 +11,11 @@ use Opencast\OpencastController;
 use Opencast\Models\Config;
 use Opencast\Models\OCEndpoints;
 use Opencast\Models\OCSeriesModel;
+
 use Opencast\Models\REST\Config as RESTConfig;
 use Opencast\Models\REST\ServicesClient;
+
+use Opencast\Models\LTI\LtiLink;
 
 use Opencast\Models\I18N as _;
 
@@ -130,6 +133,9 @@ class ConfigAdd extends OpencastController
                         'type' => 'success',
                         'text' => implode('<br>', $success_message)
                     ];
+
+                    $config->config['checked'] = true;
+                    $config->store();
                 }
             } else {
                 //OCEndpoints::removeEndpoint($config_id, 'services');
@@ -143,11 +149,37 @@ class ConfigAdd extends OpencastController
             }
         }
 
+        // return lti data to test lti connection
+        $search_config = Config::getConfigForService('search', $config_id);
+        $url = parse_url($search_config['service_url']);
+
+        $search_url = $url['scheme'] . '://'. $url['host']
+            . ($url['port'] ? ':' . $url['port'] : '') . '/lti';
+
+        $lti_link = new LtiLink(
+            $search_url,
+            $config->config['ltikey'],
+            $config->config['ltisecret']
+        );
+
+        $launch_data = $lti_link->getBasicLaunchData();
+        $signature   = $lti_link->getLaunchSignature($launch_data);
+
+        $launch_data['oauth_signature'] = $signature;
+
+        $lti = [
+            'launch_url'  => $lti_link->getLaunchURL(),
+            'launch_data' => $launch_data
+        ];
 
         // after updating the configuration, clear the cached series data
         OCSeriesModel::clearCachedSeriesData();
         #OpencastLTI::generate_complete_acl_mapping();
 
-        return $this->createResponse(['config' => $config, 'message' => $message], $response);
+        return $this->createResponse([
+            'config' => $config->config->getArrayCopy(),
+            'message'=> $message,
+            'lti' => $lti
+        ], $response);
     }
 }

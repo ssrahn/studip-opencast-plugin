@@ -11,9 +11,9 @@ use \PDO;
 
 use Opencast\LTI\OpencastLTI;
 
-class OCModel
+class Helpers
 {
-    static function getOCRessources()
+    static function getResources()
     {
        $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
                 LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
@@ -96,19 +96,15 @@ class OCModel
 
     static function getDatesForSemester($seminar_id, $semester_id = null)
     {
-        if ($semester_id == 'all') {
+        if ($semester_id == 'all' || is_null($semester_id)) {
             // get all dates
             $stmt = DBManager::get()->prepare("SELECT * FROM `termine`
                 WHERE `range_id` = ?
                 ORDER BY `date` ASC");
             $stmt->execute([$seminar_id]);
         } else {
-            // get dates for selected semester only (or current, if none is set)
-            if (is_null($semester_id)) {
-                $semester = Semester::findCurrent();
-            } else {
-                $semester = Semester::find($semester_id);
-            }
+            // get dates for selected semester only
+            $semester = Semester::find($semester_id);
 
             $stmt = DBManager::get()->prepare("SELECT * FROM `termine`
                 WHERE `range_id` = ?
@@ -351,9 +347,16 @@ class OCModel
 
         $cas = self::checkResource($resource_id);
         $ca = $cas[0];
-        $instructors = $course->getMembers('dozent');
 
-        $instructor = array_shift($instructors);
+        $creator = 'unknown';
+
+        if ($GLOBALS['perm']->have_perm('admin')) {
+            $instructors = $course->getMembers('dozent');
+            $instructor = array_shift($instructors);
+            $creator    = $instructor['fullname'];
+        } else {
+            $creator    = get_fullname();
+        }
 
         $inst_data = Institute::find($course->institut_id);
 
@@ -368,7 +371,6 @@ class OCModel
         }
 
         $contributor = $inst_data['name'];
-        $creator = $instructor['fullname'];
         $description = $issue->description;
         $device = $ca['capture_agent'];
 
@@ -433,31 +435,36 @@ class OCModel
     {
         // Local
         $entry = self::getEntry($course_id, $episode_id);
-        $old_visibility = $entry->visible;
-        $entry->visible = $visibility;
 
-        $entry->store();
+        if ($entry) {
+            $old_visibility = $entry->visible;
+            $entry->visible = $visibility;
 
-        $config_id = OCConfig::getConfigIdForCourse($course_id);
-
-        // Remote
-        if ($visibility == 'visible') {
-            $acl_manager = ACLManagerClient::getInstance($config_id);
-            $acl_manager->applyACLto('episode', $episode_id, '');
-        } else {
-            OpencastLTI::setAcls($course_id);
-        }
-
-        $api = ApiWorkflowsClient::getInstance($config_id);
-
-        if (!$api->republish($episode_id)) {
-            // if republishing could not take place, reset permissions to previous state
-            $entry->visible = $old_visibility;
             $entry->store();
-            return false;
+
+            $config_id = OCConfig::getConfigIdForCourse($course_id);
+
+            // Remote
+            if ($visibility == 'visible') {
+                $acl_manager = ACLManagerClient::getInstance($config_id);
+                $acl_manager->applyACLto('episode', $episode_id, '');
+            }
+
+            OpencastLTI::setAcls($course_id);
+
+            $api = ApiWorkflowsClient::getInstance($config_id);
+
+            if (!$api->republish($episode_id)) {
+                // if republishing could not take place, reset permissions to previous state
+                $entry->visible = $old_visibility;
+                $entry->store();
+                return false;
+            }
+
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**

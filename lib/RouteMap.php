@@ -38,6 +38,8 @@ class RouteMap
         $this->app->put('/config/{id}', Routes\Config\ConfigEdit::class);
         $this->app->delete('/config/{id}', Routes\Config\ConfigDelete::class);
 
+        $this->app->get('/config', Routes\Resources\ResourcesList::class);
+
         ##TEMPLATE##
     }
 

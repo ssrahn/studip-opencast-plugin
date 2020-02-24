@@ -9,3 +9,6 @@ export const CONFIG_CLEAR      = "configClear";
 
 export const CONFIG_LIST_READ  = "configListRead";
 export const CONFIG_LIST_CLEAR = "configListClear";
+
+export const RESOURCES_READ    = "resourcesRead";
+export const RESOURCES_UPDATE  = "resourcesUpdate";

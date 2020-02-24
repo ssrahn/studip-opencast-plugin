@@ -6,6 +6,7 @@
 
 <script>
 export default {
+    name: "StudipButton",
     props: {
         name: {
             type: String,

@@ -36,7 +36,7 @@ class RestClient
         }
 
         if (!property_exists(get_called_class(), 'me')) {
-            throw new Exception('Every child of ' . get_class() . ' needs to implement static property "$me"');
+            throw new \Exception('Every child of ' . get_class() . ' needs to implement static property "$me"');
         }
 
         if (!is_object(static::$me[$config_id])) {
@@ -69,7 +69,7 @@ class RestClient
                 )) {
                     $this->base_url = $endpoint[0]->service_url;
                 } else {
-                    throw new Exception (_("Konnte keine Konfiguration für den Service $service_type  finden."));
+                    throw new \Exception (_("Konnte keine Konfiguration für den Service $service_type  finden."));
                 }
             }
 
@@ -77,7 +77,7 @@ class RestClient
             $this->password   = $config->config['password'];
             $this->oc_version = $config->config['version'];
         } else {
-            throw new Exception (_("Die Konfiguration wurde nicht korrekt angegeben."));
+            throw new \Exception (_("Die Konfiguration wurde nicht korrekt angegeben."));
         }
     }
 
@@ -222,13 +222,13 @@ class RestClient
 
                     return false;
                 } else if ($httpCode == 401) {
-                    throw new AccessDeniedException('Wrong username/password for Opencast server!');
+                    throw new \AccessDeniedException('Wrong username/password for Opencast server!');
                 } else {
                     return json_decode($response);
                 }
             }
         } else {
-            throw new Exception(_("Es wurde keine Service URL angegeben"));
+            throw new \Exception(_("Es wurde keine Service URL angegeben"));
         }
 
     }
@@ -293,7 +293,7 @@ class RestClient
                 }
             }
         } else {
-            throw new Exception(_("Es wurde keine Service URL angegeben"));
+            throw new \Exception(_("Es wurde keine Service URL angegeben"));
         }
     }
 }

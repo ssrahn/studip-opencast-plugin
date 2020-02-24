@@ -2,7 +2,7 @@
 
 namespace Opencast\Models;
 
-class OCResources extends \SimpleORMap
+class Resources extends \SimpleORMap
 {
     protected static function configure($config = array())
     {
