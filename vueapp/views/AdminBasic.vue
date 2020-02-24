@@ -59,7 +59,7 @@
                 <StudipButton icon="accept" @click="storeConfig">
                     Einstellungen speichern und überprüfen
                 </StudipButton>
-                <StudipButton @click="nextStep">
+                <StudipButton @click="nextStep" v-if="config.checked">
                     Weiter zu Schritt 2 >>
                 </StudipButton>
             </footer>
