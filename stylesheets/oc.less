@@ -760,6 +760,40 @@ img.ocinvisible {
 }
 
 
+// Admin-Wizard - Steps
+.steps {
+    height: 50px;
+    width: 95%;
+
+    .step {
+        display: inline-block;
+        height: 40px;
+        width: 40px;
+
+        border-radius: 20px;
+        padding: 0px;
+        font-size: 20px;
+        line-height: 40px;
+
+        background-color: #CCCCCC;
+        text-align:center;
+
+        &.active {
+            background-color: #CCCCFF;
+        }
+    }
+
+    .spacer {
+        display: inline-block;
+        height: 0px;
+        border: 1px solid gray;
+        margin: 0px 10px 3px 5px;
+        padding: 0px;
+        line-height: 0px;
+        width: 40px;
+    }
+}
+
 @media only screen and (max-width: @major-breakpoint-large) {
     .oc_flexplaycontainer {
         width: 15em;
