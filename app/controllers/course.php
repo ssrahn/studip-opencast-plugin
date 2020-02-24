@@ -186,9 +186,9 @@ class CourseController extends OpencastController
 
             if ($perm->have_perm('root')) {
                 $this->workflow_client = WorkflowClient::getInstance();
-                $workflow_ids = OCModel::getWorkflowIDsforCourse($this->course_id);
+                $workflow_ids = Helpers::getWorkflowIDsforCourse($this->course_id);
                 if (!empty($workflow_ids)) {
-                    $this->states = OCModel::getWorkflowStates($this->course_id, $workflow_ids);
+                    $this->states = Helpers::getWorkflowStates($this->course_id, $workflow_ids);
                 }
                 //workflow
                 $occourse = new OCCourseModel($this->course_id);
@@ -429,7 +429,7 @@ class CourseController extends OpencastController
         $this->semester_filter  = Request::option('semester_filter') ?: $current_semester['semester_id'];
         UrlHelper::bindLinkParam('semester_filter', $this->semester_filter);
 
-        $this->dates = OCModel::getDatesForSemester($this->course_id, $this->semester_filter);
+        $this->dates = Helpers::getDatesForSemester($this->course_id, $this->semester_filter);
 
         $this->all_semester = Semester::getAll();
 
@@ -544,7 +544,7 @@ class CourseController extends OpencastController
         $course_id = Request::get('cid');
         if ($GLOBALS['perm']->have_studip_perm('tutor', $course_id)) {
             $scheduler_client = SchedulerClient::create($course_id);
-            $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+            $scheduled = Helpers::checkScheduledRecording($course_id, $resource_id, $termin_id);
 
             if ($scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id'])) {
                 $this->flash['messages'] = ['success' => $this->_("Die geplante Aufzeichnung wurde aktualisiert.")];
@@ -592,9 +592,9 @@ class CourseController extends OpencastController
         $success = true;
 
         if ($GLOBALS['perm']->have_studip_perm('admin', $this->course_id)
-            || OCModel::checkPermForEpisode($episode_id, $this->user_id))
+            || Helpers::checkPermForEpisode($episode_id, $this->user_id))
         {
-            if (OCModel::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {
+            if (Helpers::setVisibilityForEpisode($this->course_id, $episode_id, $permission)) {
                 StudipLog::log('OC_CHANGE_EPISODE_VISIBILITY', null, $this->course_id, "Episodensichtbarkeit wurde auf $permission geschaltet ($episode_id)");
                 $this->set_status('201');
             } else {
@@ -602,7 +602,7 @@ class CourseController extends OpencastController
                 $this->set_status('409');
             }
 
-            $this->render_json(OCModel::getEntry($this->course_id, $episode_id)->toArray());
+            $this->render_json(Helpers::getEntry($this->course_id, $episode_id)->toArray());
         } else {
             throw new AccessDeniedException();
         }
@@ -680,7 +680,7 @@ class CourseController extends OpencastController
 
     static function schedule($resource_id, $termin_id, $course_id)
     {
-        $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+        $scheduled = Helpers::checkScheduledRecording($course_id, $resource_id, $termin_id);
         if (!$scheduled) {
             $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
 
@@ -697,7 +697,7 @@ class CourseController extends OpencastController
     static function updateschedule($resource_id, $termin_id, $course_id)
     {
 
-        $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+        $scheduled = Helpers::checkScheduledRecording($course_id, $resource_id, $termin_id);
         if ($scheduled) {
             $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
             $scheduler_client->updateEventForSeminar($course_id, $resource_id, $termin_id, $scheduled['event_id']);
@@ -709,7 +709,7 @@ class CourseController extends OpencastController
 
     static function unschedule($resource_id, $termin_id, $course_id)
     {
-        $scheduled = OCModel::checkScheduledRecording($course_id, $resource_id, $termin_id);
+        $scheduled = Helpers::checkScheduledRecording($course_id, $resource_id, $termin_id);
         if ($scheduled) {
             $scheduler_client = SchedulerClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
 
@@ -728,7 +728,7 @@ class CourseController extends OpencastController
         $workflow_client = WorkflowClient::getInstance();
 
         if ($workflow_client->removeInstanceComplete($workflow_id)) {
-            if (OCModel::removeWorkflowIDforCourse($workflow_id, $this->course_id)) {
+            if (Helpers::removeWorkflowIDforCourse($workflow_id, $this->course_id)) {
                 $this->flash['messages'] = ['success' => $this->_("Die hochgeladenen Daten wurden gelöscht.")];
             } else {
                 $this->flash['messages'] = ['error' => $this->_("Die Referenz in der Datenbank konnte nicht gelöscht werden.")];

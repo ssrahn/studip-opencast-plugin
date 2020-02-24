@@ -556,11 +556,11 @@ class Helpers
             $current_workflow_instance = $current_workflow_client->getWorkflowInstance($table_entry['workflow_id']);
             if ($current_workflow_instance->state == 'SUCCEEDED') {
                 $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance->state;
-                OCModel::removeWorkflowIDforCourse($table_entry['workflow_id'], $table_entry['seminar_id']);
+                Helpers::removeWorkflowIDforCourse($table_entry['workflow_id'], $table_entry['seminar_id']);
             } else if($current_workflow_instance) {
                 $states[$table_entry['seminar_id']][$table_entry['workflow_id']] = $current_workflow_instance;
             } else {
-                OCModel::removeWorkflowIDforCourse($table_entry['workflow_id'], $table_entry['seminar_id']);
+                Helpers::removeWorkflowIDforCourse($table_entry['workflow_id'], $table_entry['seminar_id']);
             }
         }
 

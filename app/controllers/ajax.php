@@ -136,10 +136,10 @@ class AjaxController extends OpencastController
 
     function getWorkflowStatusforCourse_action($course_id)
     {
-        $workflow_ids = OCModel::getWorkflowIDsforCourse($course_id);
+        $workflow_ids = Helpers::getWorkflowIDsforCourse($course_id);
         $this->workflow_client = WorkflowClient::getInstance(OCConfig::getConfigIdForCourse($course_id));
         if (!empty($workflow_ids)) {
-            $states = OCModel::getWorkflowStates($course_id, $workflow_ids);
+            $states = Helpers::getWorkflowStates($course_id, $workflow_ids);
 
             $this->render_text(json_encode($states));
         } else {

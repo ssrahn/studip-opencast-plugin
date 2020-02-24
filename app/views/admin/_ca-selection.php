@@ -1,5 +1,5 @@
 <?
-    $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
+    $assigned_agents = Helpers::getCAforResource($resource['resource_id']);
 ?>
 
 

@@ -70,7 +70,7 @@ class ApiEventsClient extends OCRestClient
             : 'visible';
 
         if (empty($acls)) {
-            OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
+            Helpers::setVisibilityForEpisode($course_id, $episode_id, $default);
             return $default;
         }
 
@@ -105,7 +105,7 @@ class ApiEventsClient extends OCRestClient
         }
 
         // nothing found, return default visibility
-        OCModel::setVisibilityForEpisode($course_id, $episode_id, $default);
+        Helpers::setVisibilityForEpisode($course_id, $episode_id, $default);
         return $default;
     }
 }

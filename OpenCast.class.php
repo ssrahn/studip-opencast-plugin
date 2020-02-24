@@ -7,7 +7,7 @@ use Opencast\LTI\OpencastLTI;
 
 require __DIR__.'/composer_modules/autoload.php';
 
-use Opencast\Models\OCModel;
+use Opencast\Models\Helpers;
 use Opencast\Models\OCCourseModel;
 use Opencast\Models\OCConfig;
 use Opencast\Models\OCSeminarSeries;
@@ -59,12 +59,12 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
 
             $id = Request::get('sem_id', $id);
 
-            if ($perm->have_perm('tutor') && OCModel::getConfigurationstate()) {
+            if ($perm->have_perm('tutor') && Helpers::getConfigurationstate()) {
                 PageLayout::addScript($this->getPluginUrl() . '/javascripts/embed.js');
                 PageLayout::addStylesheet($this->getpluginUrl() . '/stylesheets/embed.css');
             }
 
-            if (OCModel::getConfigurationstate()) {
+            if (Helpers::getConfigurationstate()) {
 
                 StudipFormat::addStudipMarkup('opencast', '\[opencast\]', '\[\/opencast\]', 'OpenCast::markupOpencast');
 
@@ -217,7 +217,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     function getTabNavigation($course_id)
     {
 
-        if (!$this->isActivated($course_id) || !OCModel::getConfigurationstate()) {
+        if (!$this->isActivated($course_id) || !Helpers::getConfigurationstate()) {
             return;
         }
 
@@ -269,7 +269,7 @@ class OpenCast extends StudipPlugin implements SystemPlugin, StandardPlugin
     static function markupOpencast($markup, $matches, $contents)
     {
         $current_user_id = $GLOBALS['auth']->auth['uid'];
-        $series_id       = OCModel::getSeriesForEpisode($contents);
+        $series_id       = Helpers::getSeriesForEpisode($contents);
 
         $course_id       = OCConfig::getCourseIdForSeries($series_id);
 

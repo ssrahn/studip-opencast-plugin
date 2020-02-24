@@ -277,7 +277,7 @@ class AdminController extends OpencastController
                 }
 
                 if ($comp) {
-                    $services = OCModel::retrieveRESTservices($comp, $service_url['scheme']);
+                    $services = Helpers::retrieveRESTservices($comp, $service_url['scheme']);
 
                     if (empty($services)) {
                         OCEndpoints::removeEndpoint($config_id, 'services');
@@ -357,7 +357,7 @@ class AdminController extends OpencastController
         PageLayout::setTitle($this->_("Opencast Capture Agent Verwaltung"));
         Navigation::activateItem('/admin/config/oc-resources');
 
-        $this->resources = OCModel::getOCRessources();
+        $this->resources = Helpers::getOCRessources();
         if (empty($this->resources)) {
             $this->flash['messages'] = [
                 'info' => $this->_('Es wurden keine passenden Ressourcen gefunden.')
@@ -372,7 +372,7 @@ class AdminController extends OpencastController
 
 
         foreach ($this->resources as $resource) {
-            $assigned_agents = OCModel::getCAforResource($resource['resource_id']);
+            $assigned_agents = Helpers::getCAforResource($resource['resource_id']);
 
             if ($assigned_agents) {
                 $existing_agent = false;
@@ -385,7 +385,7 @@ class AdminController extends OpencastController
                 }
 
                 if (!$existing_agent){
-                    OCModel::removeCAforResource($resource['resource_id'], $assigned_agents['capture_agent']);
+                    Helpers::removeCAforResource($resource['resource_id'], $assigned_agents['capture_agent']);
                     $this->flash['messages'] = array('info' => sprintf($this->_("Der Capture Agent %s existiert nicht mehr und wurde entfernt."),$assigned_agents['capture_agent'] ));
                 }
             }
@@ -394,7 +394,7 @@ class AdminController extends OpencastController
         $this->available_agents = $agents;
         $this->definitions = $workflow_client->getDefinitions();
 
-        $this->assigned_cas = OCModel::getAssignedCAS();
+        $this->assigned_cas = Helpers::getAssignedCAS();
 
         $this->workflows = array_filter(
             $workflow_client->getTaggedWorkflowDefinitions(),
@@ -412,11 +412,11 @@ class AdminController extends OpencastController
 
     function update_resource_action()
     {
-        $this->resources = OCModel::getOCRessources();
+        $this->resources = Helpers::getOCRessources();
         foreach ($this->resources as $resource) {
             if (Request::get('action') == 'add') {
                 if (($candidate_ca = Request::get($resource['resource_id'])) && $candidate_wf = Request::get('workflow')) {
-                    $success = OCModel::setCAforResource($resource['resource_id'], $candidate_ca, $candidate_wf);
+                    $success = Helpers::setCAforResource($resource['resource_id'], $candidate_ca, $candidate_wf);
                 }
             }
         }
@@ -451,7 +451,7 @@ class AdminController extends OpencastController
 
     function remove_ca_action($resource_id, $capture_agent)
     {
-        OCModel::removeCAforResource($resource_id, $capture_agent);
+        Helpers::removeCAforResource($resource_id, $capture_agent);
         $this->redirect('admin/resources');
     }
 

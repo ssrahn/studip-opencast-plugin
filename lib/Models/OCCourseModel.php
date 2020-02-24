@@ -85,7 +85,7 @@ class OCCourseModel
 
             $series = $search_client->getEpisodes($this->getSeriesID(), $this->getCourseID(), [$role]);
 
-            $stored_episodes = OCModel::getCoursePositions($this->getCourseID());
+            $stored_episodes = Helpers::getCoursePositions($this->getCourseID());
             $ordered_episodes = [];
 
             //check if series' episodes is already stored in studip
@@ -167,7 +167,7 @@ class OCCourseModel
                 $tmp['visibility'] = $stored_episode['visible'];
                 $tmp['mkdate']     = $stored_episode['mkdate'];
 
-                OCModel::setEpisode(
+                Helpers::setEpisode(
                     $stored_episode['episode_id'],
                     $stored_episode['series_id'],
                     $tmp['visibility'],
@@ -190,7 +190,7 @@ class OCCourseModel
                 $episode['visibility'] = 'true';
                 $episode['mkdate'] = $timestamp;
 
-                OCModel::setEpisode(
+                Helpers::setEpisode(
                     $episode['id'],
                     $episode['series_id'],
                     'visible',
@@ -211,7 +211,7 @@ class OCCourseModel
         if (!empty($stored_episodes)) {
             foreach ($stored_episodes as $orphaned_episode) {
                 // todo log event for this action
-                OCModel::removeStoredEpisode(
+                Helpers::removeStoredEpisode(
                     $orphaned_episode['episode_id']
                 );
             }

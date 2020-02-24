@@ -62,7 +62,7 @@ class SchedulerClient extends OCRestClient
             && $result[1] != 409) {
 
             $xml = simplexml_load_string($media_package);
-            OCModel::scheduleRecording($course_id, $resource_id, $termin_id, $event_id ?: (string)$xml['id']);
+            Helpers::scheduleRecording($course_id, $resource_id, $termin_id, $event_id ?: (string)$xml['id']);
 
             return true;
         } else {
@@ -83,14 +83,14 @@ class SchedulerClient extends OCRestClient
      */
     function deleteEventForSeminar($course_id, $resource_id, $date_id)
     {
-        $event_data = OCModel::checkScheduled($course_id, $resource_id, $date_id);
+        $event_data = Helpers::checkScheduled($course_id, $resource_id, $date_id);
         $event_id = $event_data[0]['event_id'];
 
         $result = $this->deleteEvent($event_id);
 
         // remove scheduled event from studip even though it isn't available on opencast
         if (in_array($result[1], array(200, 204, 404))) {
-            OCModel::unscheduleRecording($event_id);
+            Helpers::unscheduleRecording($event_id);
 
             return true;
         } else {
@@ -154,7 +154,7 @@ class SchedulerClient extends OCRestClient
     {
         $config = OCConfig::getConfigForCourse($course_id);
 
-        $dublincore = OCModel::createScheduleEventXML(
+        $dublincore = Helpers::createScheduleEventXML(
             $course_id, $resource_id, $termin_id, $event_id, $config['time_buffer_overlap']
         );
 
@@ -188,7 +188,7 @@ class SchedulerClient extends OCRestClient
         }
 
         $room     = ResourceObject::Factory($resource_id);
-        $cas      = OCModel::checkResource($resource_id);
+        $cas      = Helpers::checkResource($resource_id);
         $ca       = $cas[0];
 
         $device   = $ca['capture_agent'];

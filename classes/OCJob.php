@@ -339,7 +339,7 @@ class OCJob
                                 <dcterms:creator><![CDATA[' . $dc_values['creator'] . ']]></dcterms:creator>
                                 <dcterms:contributor><![CDATA[' . $dc_values['contributor'] . ']]></dcterms:contributor>
                                 <dcterms:subject><![CDATA[' . $dc_values['subject'] . ']]></dcterms:subject>
-                                <dcterms:created xsi:type="dcterms:W3CDTF">' . OCModel::getDCTime($creation_time->getTimestamp()) . '</dcterms:created>
+                                <dcterms:created xsi:type="dcterms:W3CDTF">' . Helpers::getDCTime($creation_time->getTimestamp()) . '</dcterms:created>
                                 <dcterms:description><![CDATA[' . $dc_values['description'] . ']]></dcterms:description>
                                 <dcterms:language><![CDATA[' . $dc_values['language'] . ']]></dcterms:language>
                                 <dcterms:title><![CDATA[' . $dc_values['title'] . ']]></dcterms:title>
@@ -370,7 +370,7 @@ class OCJob
                 $json = json_encode($simplexml);
                 $x = json_decode($json, true);
                 $result = $x['@attributes'];
-                OCModel::setWorkflowIDforCourse($result['id'], $this->data['id_list']['course'], $GLOBALS['auth']->auth['uid'], time());
+                Helpers::setWorkflowIDforCourse($result['id'], $this->data['id_list']['course'], $GLOBALS['auth']->auth['uid'], time());
                 $this->opencast_info['ingest'] = $result;
             }
         }

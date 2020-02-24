@@ -29,9 +29,9 @@
     <tr>
         <? $date      = new SingleDate($d['termin_id']); ?>
         <? $resource  = $date->getResourceID(); ?>
-        <? $scheduled = reset(OCModel::checkScheduled($course_id, $resource, $date->termin_id)) ?>
+        <? $scheduled = reset(Helpers::checkScheduled($course_id, $resource, $date->termin_id)) ?>
         <td>
-            <? if (isset($resource) && OCModel::checkResource($resource) && (date($d['date']) > time())) :?>
+            <? if (isset($resource) && Helpers::checkResource($resource) && (date($d['date']) > time())) :?>
                 <input name="dates[<?= $date->termin_id ?>]" type="checkbox" value="<?= $resource ?>"></input>
             <? else: ?>
                 <input type="checkbox" disabled></input>
@@ -84,7 +84,7 @@
         <td> <?=$_("Kein Titel eingetragen")?></td>
         <? endif; ?>
         <td>
-            <? if (isset($resource) && OCModel::checkResource($resource)) : ?>
+            <? if (isset($resource) && Helpers::checkResource($resource)) : ?>
             <? if ($scheduled) : ?>
                     <?= new Icon('video', 'info', array(
                         'title' => $_("Aufzeichnung ist bereits geplant.")
@@ -109,7 +109,7 @@
 
         <td>
             <? $resource = $date->getResourceID(); ?>
-            <? if (isset($resource) && OCModel::checkResource($resource)) : ?>
+            <? if (isset($resource) && Helpers::checkResource($resource)) : ?>
                 <? if ($scheduled && (int)date($d['date']) > time()) :?>
                     <a href="<?=PluginEngine::getLink('opencast/course/update/'.$resource .'/'. $date->termin_id )?>">
                         <?= new Icon('refresh' ,'clickable', array(
