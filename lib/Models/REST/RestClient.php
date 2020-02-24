@@ -6,6 +6,7 @@ namespace Opencast\Models\REST;
 
 use Opencast\Models\Config;
 use Opencast\Models\OCEndpoints;
+use \Context;
 
 define('DEBUG_CURL', FALSE);
 

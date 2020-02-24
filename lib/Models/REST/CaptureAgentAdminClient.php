@@ -2,7 +2,7 @@
 
 namespace Opencast\Models\REST;
 
-class CaptureAgentAdminClient extends OCRestClient
+class CaptureAgentAdminClient extends RestClient
 {
     public static $me;
 

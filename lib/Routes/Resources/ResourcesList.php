@@ -52,7 +52,23 @@ class ResourcesList extends OpencastController
         }
 
         $available_agents = $agents;
-        $definitions = $workflow_client->getDefinitions();
+        $definitions = $workflow_client->getDefinitions()->definition;
+
+        $allowed_tags = ['schedule', 'schedule-ng'];
+
+        $definitions = array_filter($definitions, function($elem) use ($allowed_tags) {
+            foreach ($allowed_tags as $tag) {
+                return in_array($tag, $elem->tags->tag) === true
+                    || $elem->tags->tag == $tag;
+            }
+        });
+
+        array_walk($definitions, function(&$elem) {
+            $elem = [
+                'id'    => $elem->id,
+                'title' => $elem->title
+            ];
+        });
 
         $assigned_cas = Helpers::getAssignedCAS();
 

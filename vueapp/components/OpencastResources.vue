@@ -2,7 +2,8 @@
     <div>
         <br />
         <h1>Opencast Ressourcen</h1>
-        <form action="<?= PluginEngine::getLink('opencast/admin/update_resource/') ?>" method="post" class="default" v-if="resources.length">
+        <form action="<?= PluginEngine::getLink('opencast/admin/update_resource/') ?>"
+                method="post" class="default" v-if="resources.resources && resources.resources.length">
             <fieldset class="conf-form-field">
                 <legend>
                     {{ "Zuweisung der Capture Agents" | i18n }}
@@ -18,7 +19,6 @@
                         <th>{{ "Capture Agent" | i18n }}</th>
                         <th>{{ "Workflow" | i18n }}</th>
                         <th>{{ "Status" | i18n }}</th>
-                        <th>{{ "Aktionen" | i18n }}</th>
                     </tr>
 
                     <!--loop the ressources -->
@@ -26,10 +26,11 @@
                         <td>
                             {{ resource.name }}
                         </td>
+
                         <td>
-                            <select :name="resource.resource_id" v-if="available_agents">
+                            <select :name="resource.resource_id" v-if="resources.available_agents">
                                 <option value="" disabled selected>{{ "Bitte wählen Sie einen CA." | i18n }}</option>
-                                <option v-for="agent in available_agents"
+                                <option v-for="agent in resources.available_agents"
                                     :value="agent.name"
                                 >{{ agent.name }}</option>
                             </select>
@@ -37,17 +38,21 @@
                                 {{ "Kein (weiterer) CA verfügbar" | i18n }}
                             </span>
                         </td>
+
                         <td>
-                            <select name="workflow" v-if="available_agents && resource.definitions">
+                            <select name="workflow" v-if="resources.available_agents && resources.definitions">
                                 <option value="" disabled selected>{{ "Bitte wählen Sie einen Worflow aus." | i18n }}</option>
 
-                                <option v-for="definition in resource.definitions"
+                                <option v-for="definition in resources.definitions"
                                     :value="definition.id"
-                                >{{ definition.id }}</option>
+                                >{{ definition.title }} ({{ definition.id }})</option>
                             </select>
                         </td>
+
                         <td>
-                            {{ resource.agent.status }}
+                            <span v-if="resource.agent">
+                                {{ resource.agent.status }}
+                            </span>
                         </td>
                     </tr>
                 </table>
@@ -70,17 +75,12 @@
                 <label>
                     {{ "Standardworkflow für Uploads:" | i18n }}
                     <select name="oc_course_uploadworkflow">
-                        <? foreach ($workflows as $workflow) : ?>
-                            <option value="<?= $workflow['id'] ?>" title="<?= $workflow['description'] ?>"
-                                <?= ($current_workflow['workflow_id'] == $workflow['id']) ? 'selected' : '' ?>>
-                                <?= $workflow['title'] ?>
+                            <option v-for="workflow in resources.workflows"
+                                :value="workflow.id"
+                                :title="workflow.description"
+                            >
+                                {{ workflow.title }}
                             </option>
-                        <? endforeach; ?>
-                        <?
-                        if (!$current_workflow) {
-                            echo '<option selected>' . $_('Undefiniert') . '</option>';
-                        }
-                        ?>
                     </select>
                 </label>
 
@@ -89,11 +89,9 @@
                     {{ "Alle anderen Workflows überschreiben" | i18n }}
                 </label>
 
-                <? if (!$current_workflow) : ?>
-                    <p style="color:red">
-                        {{ "Es wurde noch kein Standardworkflow definiert!" | i18n }}
-                    </p>
-                <? endif ?>
+                <p style="color:red" v-if="!resources.workflows.length">
+                    {{ "Es wurde noch kein Standardworkflow definiert!" | i18n }}
+                </p>
             </fieldset>
 
 
@@ -104,7 +102,7 @@
             </footer>
         </form>
 
-        <MessageBox type="info" v-if="!resources.length">
+        <MessageBox type="info" v-if="no_resources">
             {{ "Weisen Sie Räumen die Eigenschaft für Aufzeichnungstechnik zu um hier Capture Agents zuweisen zu können." | i18n }}
         </MessageBox>
     </div>
@@ -130,12 +128,17 @@ export default {
 
     data() {
         return {
-
+            no_resources: false
         }
     },
 
     mounted() {
-        this.$store.dispatch(RESOURCES_READ);
+        this.$store.dispatch(RESOURCES_READ)
+        .then(() => {
+            if (!this.resources.resources.length) {
+                this.no_resources = true;
+            }
+        });
     },
 
     computed: {

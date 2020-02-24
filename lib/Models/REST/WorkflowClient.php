@@ -2,7 +2,7 @@
 
 namespace Opencast\Models\REST;
 
-class WorkflowClient extends OCRestClient
+class WorkflowClient extends RestClient
 {
     static $me;
 
@@ -57,7 +57,7 @@ class WorkflowClient extends OCRestClient
         $service_url = sprintf( "/definitions.json");
 
         if ($definitions = $this->getJSON($service_url)) {
-            return $definitions;
+            return $definitions->definitions;
         }
 
         return false;

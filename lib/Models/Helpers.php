@@ -2,12 +2,13 @@
 
 namespace Opencast\Models;
 
-use Opencast\Models\OCConfig;
+use Opencast\Models\Config as OCConfig;
 use Opencast\Models\OCSeminarSeries;
 use Opencast\Models\OCSeminarEpisodes;
 use OpenCast\Models\OCScheduledRecordings;
 use \DBManager;
 use \PDO;
+use \Config;
 
 use Opencast\LTI\OpencastLTI;
 
@@ -15,10 +16,11 @@ class Helpers
 {
     static function getResources()
     {
-       $stmt = DBManager::get()->prepare("SELECT * FROM resources_objects ro
-                LEFT JOIN resources_objects_properties rop ON (ro.resource_id = rop.resource_id)
-                WHERE rop.property_id = ?
-                AND rop.state = 'on'");
+       $stmt = DBManager::get()->prepare("SELECT r.*
+            FROM resource_properties AS rp
+            JOIN resources AS r ON (r.id = rp.resource_id)
+            WHERE property_id = ?
+            AND state = 1");
 
        $stmt->execute([Config::get()->OPENCAST_RESOURCE_PROPERTY_ID]);
        $resources =  $stmt->fetchAll(PDO::FETCH_ASSOC);
