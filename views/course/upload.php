@@ -3,15 +3,7 @@
 use Studip\Button;
 use Studip\LinkButton;
 
-?>
-<form id="upload_form" action="#" enctype="multipart/form-data" method="post" class="default">
-
-    <input type="hidden" name="series_id" value="<?= $series_id ?>">
-
-<?
-$oc_acl='';
-if($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)){
-  $oc_acl='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+$oc_acl='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Policy PolicyId="mediapackage-1"
   RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:permit-overrides"
   Version="2.0"
@@ -81,7 +73,7 @@ if($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)){
           <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">write</AttributeValue>
             <ActionAttributeDesignator AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id" DataType="http://www.w3.org/2001/XMLSchema#string"/>
-i         </ActionMatch>
+         </ActionMatch>
         </Action>
       </Actions>
     </Target>
@@ -94,12 +86,21 @@ i         </ActionMatch>
   </Rule>
 </Policy>
 ';
-$instructor_role = $this->course_id.'_Instructor';
-$oc_acl=str_replace('ROLE_USER_LTI',$instructor_role,$oc_acl);
-$oc_acl=str_replace(array("\r", "\n"), '', $oc_acl);
-$oc_acl=urlencode($oc_acl);
+
+if ($GLOBALS['perm']->have_studip_perm('tutor', $this->course_id)) {
+    $role = $this->course_id . '_Instructor';
+} else {
+    $role = $this->course_id . '_Learner';
 }
+
+$oc_acl = str_replace('ROLE_USER_LTI', $role, $oc_acl);
+$oc_acl = urlencode($oc_acl);
+$oc_acl = str_replace(array("\r", "\n"), '', $oc_acl);
 ?>
+
+<form id="upload_form" action="#" enctype="multipart/form-data" method="post" class="default">
+
+    <input type="hidden" name="series_id" value="<?= $series_id ?>">
     <input type="hidden" name="oc_acl" value="<?= $oc_acl ?>">
 
     <label>
