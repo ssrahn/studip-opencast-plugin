@@ -1,12 +1,13 @@
 {
   "name": "studip-opencast-plugin",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "description": "Stud.IP plugin for Opencast",
   "devDependencies": {
     "@babel/core": "^7.10.2",
     "@babel/preset-env": "^7.10.2",
     "axios": "^0.18.1",
     "babel-loader": "^8.1.0",
+    "clean-terminal-webpack-plugin": "^3.0.0",
     "core-js": "^3.6.5",
     "css-loader": "^2.1.1",
     "date-fns": "^2.0.0-beta.2",
